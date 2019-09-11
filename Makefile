@@ -1,7 +1,7 @@
 # A Makefile to build the sparse matrix scripts
 PROJECT =  sparse_matrices
 HEADERS =  $(PROJECT).h
-OBJ     =  sparse_matrices.o sparse_format.o
+OBJ     =  sparse_matrices.o sparse_format.o debug.o
 
 C99     =  cc -std=c99
 CFLAGS  =  -Wall -pedantic -Werror
