@@ -10,8 +10,7 @@ int main(int argc, char *argv[])
         {"ad", no_argument, &addition, 1},
         {"ts", no_argument, &transpose, 1},
         {"mm", no_argument, &matrix_multiplication, 1},
-        {0, 0, 0, 0}
-    };
+        {0, 0, 0, 0}};
 
     char *file, *file2;
     int lFlg, thread_count;
@@ -60,7 +59,20 @@ int main(int argc, char *argv[])
         }
     }
 
-    print_CLAs(file, file2, thread_count, lFlg, scalar_multiplication, trace, addition, transpose, matrix_multiplication); // debug
+
+
+    // INIT MATRIX
+    struct Matrix matrix; 
+    {
+        matrix.data_type = NULL;
+        matrix.nrow = 0;
+        matrix.ncol = 0;
+        matrix.payload = NULL;
+        matrix.csr_matrix = NULL;
+    };
+    file_reader(file, &matrix);
+
+    // print_CLAs(file, file2, thread_count, lFlg, scalar_multiplication, trace, addition, transpose, matrix_multiplication); // debug
 
     return 0;
 }

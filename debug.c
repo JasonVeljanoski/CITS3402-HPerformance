@@ -19,3 +19,21 @@ void print_CLAs(char *file, char *file2, int threadCount, int lFlg, int scalar_m
     if (matrix_multiplication)
         printf("long opt --mm flag: %d\n", matrix_multiplication);
 }
+
+void print_matrix_state(struct Matrix *matrix) {
+    int size = matrix->data_type_size + matrix->nrow_size + matrix->ncol_size + matrix->payload_size;
+    char *matrix_state = (char *)malloc(size);
+    sprintf(
+        matrix_state, 
+        "DATA TYPE:\t  %s\nNROWS:\t  %d\nNCOLS:\t  %d\nPAYLOAD: %s", 
+        matrix->data_type,
+        matrix->nrow,
+        matrix->ncol,
+        matrix->payload
+    );
+            printf("-------------\n");
+            printf("MATRIX STATE:\n");
+            printf("-------------\n");
+            printf("%s\n", matrix_state);
+            printf("-------------\n\n");
+}
