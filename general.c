@@ -4,11 +4,9 @@
 void trim_line(char line[])
 {
     int i = 0;
-
     //  LOOP UNTIL WE REACH THE END OF line
     while (line[i] != '\0')
     {
-
         //  CHECK FOR CARRIAGE-RETURN OR NEWLINE
         if (line[i] == '\r' || line[i] == '\n')
         {
@@ -19,7 +17,7 @@ void trim_line(char line[])
     }
 }
 
-//  REMOVE ANY TRAILING end-of-line CHARACTERS FROM THE LINE
+//  TODO
 void str_matrix_to_int_array(char *matrix_str, char * delim)
 {
     char *token;

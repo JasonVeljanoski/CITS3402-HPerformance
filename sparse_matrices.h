@@ -35,8 +35,11 @@ typedef struct Matrix {
 
 // SPARSE_FORMAT
 extern void file_reader(char *, struct Matrix *);
-extern void print_CLAs(char *,char *,int,int,int,int,int,int,int);
 
 // GENERAL
 extern void trim_line(char line[]);
-void str_matrix_to_int_array(char *, char *);
+void str_matrix_to_int_array(char *, char *); // TODO
+
+// DEBUG
+extern void print_matrix_state(struct Matrix *);
+extern void print_CLAs(char *,char *,int,int,int,int,int,int,int);
