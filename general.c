@@ -16,23 +16,3 @@ void trim_line(char line[])
         i = i + 1; // iterate through character array
     }
 }
-
-//  TODO
-void str_matrix_to_int_array(char *matrix_str, char * delim)
-{
-    char *token;
-
-    // GET THE FIRST TOKEN
-    token = strtok(matrix_str, delim);
-
-    // WALK THROUGH OTHER TOKENS
-    while (token != NULL)
-    {
-        /**
-        * CONSTRUCT THE SPARSE MATRIX HERE ?
-        */
-        printf(" %d\n", atoi(token));
-
-        token = strtok(NULL, delim);
-    }
-}

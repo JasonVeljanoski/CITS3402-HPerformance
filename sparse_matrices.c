@@ -59,18 +59,17 @@ int main(int argc, char *argv[])
         }
     }
 
-
-
     // INIT MATRIX
-    struct Matrix matrix; 
-    {
-        matrix.data_type = NULL;
-        matrix.nrow = 0;
-        matrix.ncol = 0;
-        matrix.payload = NULL;
-        matrix.csr_matrix = NULL;
-    };
+    struct Matrix matrix;
+    
     file_reader(file, &matrix);
+    print_matrix_state(&matrix);
+
+    struct sparse_csr matrix_csr;
+    convert_sparse_csr(&matrix, &matrix_csr);
+
+
+  
 
     // print_CLAs(file, file2, thread_count, lFlg, scalar_multiplication, trace, addition, transpose, matrix_multiplication); // debug
 

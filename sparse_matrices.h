@@ -13,13 +13,12 @@
 #define MAX_BUF_SIZE 1024
 
 // SPARSE_FORMAT
-// CSR
-typedef struct CSR_Matrix {
-  int *row_offsets; int *row_offsets_size; // last entry is nnz (number of non zeros)
-  int *columns; int *columns_size;
-  int *int_vals; int *int_vals_size;
-  float *float_vals; float *float_vals_size;
-} CSR_Matrix;
+
+typedef struct sparse_csr {
+  void *NNZ; // Non Zeros vals in row-major order
+  int *IA; // num of ements in each row (cumulitive)
+  int *JA; // col index of each nnz
+} sparse_csr;
 
 typedef struct Matrix {
   // file info
@@ -29,16 +28,18 @@ typedef struct Matrix {
   char *payload; int payload_size;
 
   // matrix
-  struct CSR_Matrix *csr_matrix;
+  // struct CSR_Matrix *csr_matrix;
   // struct CSC_Matrix *csc_matrix;
 } Matrix;
 
-// SPARSE_FORMAT
+// FILE READER
 extern void file_reader(char *, struct Matrix *);
+
+// SPARSE FORMAT
+extern void convert_sparse_csr(struct Matrix *, struct sparse_csr *);
 
 // GENERAL
 extern void trim_line(char line[]);
-void str_matrix_to_int_array(char *, char *); // TODO
 
 // DEBUG
 extern void print_matrix_state(struct Matrix *);
