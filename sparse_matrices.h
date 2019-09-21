@@ -11,13 +11,17 @@
 #define DATA_LINE 3
 
 #define MAX_BUF_SIZE 1024
+#define INT "int"
+#define FLOAT "float"
 
 // SPARSE_FORMAT
 
 typedef struct sparse_csr {
-  void *NNZ; // Non Zeros vals in row-major order
-  int *IA; // num of ements in each row (cumulitive)
-  int *JA; // col index of each nnz
+  char *data_type; int data_type_size;
+  int *NNZ_int; int NNZ_int_size; // Non Zeros vals in row-major order
+  float *NNZ_float; int NNZ_float_size; // Non Zeros vals in row-major order
+  int *IA; int IA_size; // num of ements in each row (cumulitive)
+  int *JA; int JA_size; // col index of each nnz
 } sparse_csr;
 
 typedef struct Matrix {
@@ -40,7 +44,13 @@ extern void convert_sparse_csr(struct Matrix *, struct sparse_csr *);
 
 // GENERAL
 extern void trim_line(char line[]);
+extern void *safe_malloc(size_t);
+extern void *safe_realloc(void *, size_t);
+extern void free_matrix_csr(sparse_csr *);
+extern void free_matrix(Matrix *);
+extern int *intdup(int const *, size_t);
 
 // DEBUG
 extern void print_matrix_state(struct Matrix *);
 extern void print_CLAs(char *,char *,int,int,int,int,int,int,int);
+extern void print_csr_state(struct sparse_csr *);
