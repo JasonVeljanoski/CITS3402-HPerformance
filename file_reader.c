@@ -77,7 +77,7 @@ void process_data_type_line(char *line, struct Matrix *matrix)
 {
     trim_line(line);
     int type_size = strlen(line) * sizeof(char);
-    matrix->data_type = (char *)malloc(type_size);
+    matrix->data_type = (char *)safe_malloc(type_size);
     strcpy(matrix->data_type, line);
     matrix->data_type_size = type_size;
 }
@@ -98,7 +98,7 @@ void process_data_line(char *line, struct Matrix *matrix)
 {
     trim_line(line);
     int data_size = strlen(line) * sizeof(char);
-    matrix->payload = (char *)malloc(data_size);
+    matrix->payload = (char *)safe_malloc(data_size);
     strcpy(matrix->payload, line);
     matrix->payload_size = data_size;
 }

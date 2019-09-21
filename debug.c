@@ -60,17 +60,17 @@ void print_csr_state(struct sparse_csr *matrix_csr)
         printf("NNZ:\t");
         int i;
         // PRINT NNZ's
-        for (i = 0; i < matrix_csr->NNZ_int_size / sizeof(int); i++)
+        for (i = 0; i < matrix_csr->NNZ_int_size; i++)
             printf("%d\t", matrix_csr->NNZ_int[i]);
         printf("\n");
         printf("IA:\t");
         // PRINT IA's
-        for (i = 0; i < (int)matrix_csr->IA_size / sizeof(int); i++)
+        for (i = 0; i < matrix_csr->IA_size; i++)
             printf("%d\t", matrix_csr->IA[i]);
         printf("\n");
         printf("JA:\t");
         // PRINT JA's
-        for (i = 0; i < (int)matrix_csr->JA_size / sizeof(int); i++)
+        for (i = 0; i < matrix_csr->JA_size; i++)
             printf("%d\t", matrix_csr->JA[i]);
         printf("\n");
         printf("-------------\n\n");
@@ -90,17 +90,17 @@ void print_csr_state(struct sparse_csr *matrix_csr)
         printf("NNZ:\t");
         int i;
         // PRINT NNZ's
-        for (i = 0; i < matrix_csr->NNZ_float_size / sizeof(int); i++)
+        for (i = 0; i < matrix_csr->NNZ_float_size; i++)
             printf("%f\t", matrix_csr->NNZ_float[i]);
         printf("\n");
         printf("IA:\t");
         // PRINT IA's
-        for (i = 0; i < matrix_csr->IA_size / sizeof(int); i++)
+        for (i = 0; i < matrix_csr->IA_size; i++)
             printf("%d\t", matrix_csr->IA[i]);
         printf("\n");
         printf("JA:\t");
         // PRINT JA's
-        for (i = 0; i < matrix_csr->JA_size / sizeof(int); i++)
+        for (i = 0; i < matrix_csr->JA_size; i++)
             printf("%d\t", matrix_csr->JA[i]);
         printf("\n");
         printf("-------------\n\n");

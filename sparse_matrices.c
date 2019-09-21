@@ -60,36 +60,36 @@ int main(int argc, char *argv[])
     }
 
     // INIT MATRIX
-    struct Matrix matrix1;
-    file_reader(file, &matrix1);
-    print_matrix_state(&matrix1);
-    struct sparse_csr matrix_csr;
-    convert_sparse_csr(&matrix1, &matrix_csr);
+    struct Matrix *matrix1 = safe_malloc(sizeof(Matrix));
+    file_reader(file, matrix1);
+    //print_matrix_state(matrix1);
 
+    struct sparse_csr *matrix_csr = safe_malloc(sizeof(sparse_csr));
+    convert_sparse_csr(matrix1, matrix_csr);
 
-    if (file2 != NULL) {
-        struct Matrix matrix2;
-        file_reader(file, &matrix2);
-        print_matrix_state(&matrix2);
+    // PROCESSING WITH A SECOND FILE
+    if (file2 != NULL)
+    {
+        struct Matrix *matrix2 = safe_malloc(sizeof(Matrix));
+        file_reader(file2, matrix2);
+        print_matrix_state(matrix2);
 
-        struct sparse_csr matrix_csr2;
-        convert_sparse_csr(&matrix2, &matrix_csr2);
+        struct sparse_csr *matrix_csr2 = safe_malloc(sizeof(sparse_csr));
+        convert_sparse_csr(matrix2, matrix_csr2);
+        print_csr_state(matrix_csr2);
+
+        // DEALLOCATE ALLOCATED MEMORY
+        free_matrix_csr(matrix_csr2);
+        free_matrix(matrix2);
     }
-    //print_CLAs(file, file2, thread_count, lFlg, scalar_multiplication, trace, addition, transpose, matrix_multiplication); // debug
+
+    print_CLAs(file, file2, thread_count, lFlg, scalar_multiplication, trace, addition, transpose, matrix_multiplication); // debug
     // DEBUG
-    //print_csr_state(&matrix_csr);
+    //print_csr_state(matrix_csr);
 
+    // DEALLOCATE ALLOCATED MEMORY
+    free_matrix_csr(matrix_csr);
+    free_matrix(matrix1);
 
-  free(matrix1.data_type);
-  free(matrix1.payload);
-
-  free(matrix_csr.data_type);
-  free(matrix_csr.IA);
-  free(matrix_csr.JA);
-  if(strcmp(matrix_csr.data_type, INT) == 0)
-    free(matrix_csr.NNZ_int);
-  else
-    free(matrix_csr.NNZ_float);
-  
     return 0;
 }

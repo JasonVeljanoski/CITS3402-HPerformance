@@ -5,9 +5,7 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
 {
     int nrow = matrix->nrow;
     int ncol = matrix->ncol;
-    char *data = matrix->payload;
     char *data_type = matrix->data_type;
-    printf("matrix:  %s\t%d\t%d\t%s\n", data_type, nrow, ncol, data);
 
     char *token;
     int row_cnt = 0;
@@ -15,7 +13,8 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
     int col = 0;
     int IA[nrow + 1];
     memset(IA, 0, sizeof(IA)); // set to zero
-    int *JA = (int *)safe_malloc(sizeof(int));
+    matrix_csr->JA = (int *)safe_malloc(sizeof(int));
+    matrix_csr->JA_size = 0;
 
     // GET THE FIRST TOKEN
     token = strtok(matrix->payload, " ");
@@ -28,7 +27,8 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
         strcpy(matrix_csr->data_type, INT);
 
         // INITIAL MEMORY ALLOCATION
-        int *NNZ = (int *)safe_malloc(sizeof(int));
+        matrix_csr->NNZ_int = (int *)safe_malloc(sizeof(int));
+        matrix_csr->NNZ_int_size = 0;
 
         // WALK THROUGH OTHER TOKENS
         int nvals = 0;
@@ -43,12 +43,15 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
             if (tmp != 0)
             {
                 // ADD NON-ZERO TO NNZ ARRAY
-                NNZ = safe_realloc(NNZ, (nvals + 1) * sizeof(NNZ[0]));
-                NNZ[nvals] = atoi(token);
-
+                matrix_csr->NNZ_int = safe_realloc(matrix_csr->NNZ_int, (nvals + 1) * sizeof(matrix_csr->NNZ_int[0]));
+                matrix_csr->NNZ_int[nvals] = atoi(token);
+                matrix_csr->NNZ_int_size++;
+                
                 // ADD COLUMN INDEX OF ELEMENT ADDED TO NNZ
-                JA = safe_realloc(JA, (nvals + 1) * sizeof(JA[0]));
-                JA[nvals++] = col;
+                matrix_csr->JA = safe_realloc(matrix_csr->JA, (nvals + 1) * sizeof(matrix_csr->JA[0]));
+                matrix_csr->JA[nvals] = col;
+                matrix_csr->JA_size++;
+                nvals++;
 
                 // INCREMENT NUMBER OF NON-ZEROS IN ROW
                 IA[row]++;
@@ -60,29 +63,19 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
             col = (col + 1) % ncol;
         }
 
-        // BUILD CSR MATRIX
-        // NNZ_ints
-        matrix_csr->NNZ_int_size = nvals * sizeof(int);
-        matrix_csr->NNZ_int = (int *)safe_malloc(matrix_csr->NNZ_int_size);
-        matrix_csr->NNZ_int = NNZ;
-        // JAs
-        matrix_csr->JA_size = nvals * sizeof(int);
-        matrix_csr->JA = (int *)safe_malloc(matrix_csr->JA_size);
-        matrix_csr->JA = JA;
-        // IAs
-        matrix_csr->IA_size = (nrow + 1) * sizeof(int);
+        // BUILD CSR MATRIX (IAs)
+        matrix_csr->IA_size = (nrow + 1);
         matrix_csr->IA = (int *)safe_malloc(matrix_csr->IA_size);
         matrix_csr->IA = intdup(IA, matrix_csr->IA_size);
     }
-    // ELSE, FLOAT
     else {
-
         // MANAGE DATA TYPE PARAM IN CSC_MATRIX
         matrix_csr->data_type = (char *)safe_malloc(strlen(FLOAT) * sizeof(char));
         strcpy(matrix_csr->data_type, FLOAT);
 
         // INITIAL MEMORY ALLOCATION
-        float *NNZ = (float *)safe_malloc(sizeof(int));
+        matrix_csr->NNZ_float = (float *)safe_malloc(sizeof(float));
+        matrix_csr->NNZ_float_size = 0;
 
         // WALK THROUGH OTHER TOKENS
         int nvals = 0;
@@ -97,12 +90,15 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
             if (tmp != 0)
             {
                 // ADD NON-ZERO TO NNZ ARRAY
-                NNZ = safe_realloc(NNZ, (nvals + 1) * sizeof(NNZ[0]));
-                NNZ[nvals] = atof(token);
-
+                matrix_csr->NNZ_float = safe_realloc(matrix_csr->NNZ_float, (nvals + 1) * sizeof(matrix_csr->NNZ_float[0]));
+                matrix_csr->NNZ_float[nvals] = atof(token);
+                matrix_csr->NNZ_float_size++;
+                
                 // ADD COLUMN INDEX OF ELEMENT ADDED TO NNZ
-                JA = safe_realloc(JA, (nvals + 1) * sizeof(JA[0]));
-                JA[nvals++] = col;
+                matrix_csr->JA = safe_realloc(matrix_csr->JA, (nvals + 1) * sizeof(matrix_csr->JA[0]));
+                matrix_csr->JA[nvals] = col;
+                matrix_csr->JA_size++;
+                nvals++;
 
                 // INCREMENT NUMBER OF NON-ZEROS IN ROW
                 IA[row]++;
@@ -114,17 +110,8 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
             col = (col + 1) % ncol;
         }
 
-        // BUILD CSR MATRIX
-        // NNZ_ints
-        matrix_csr->NNZ_float_size = nvals * sizeof(float);
-        matrix_csr->NNZ_float = safe_malloc(matrix_csr->NNZ_int_size);
-        matrix_csr->NNZ_float = NNZ;
-        // JAs
-        matrix_csr->JA_size = nvals * sizeof(int);
-        matrix_csr->JA = (int *)safe_malloc(matrix_csr->JA_size);
-        matrix_csr->JA = JA;
-        // IAs
-        matrix_csr->IA_size = (nrow + 1) * sizeof(int);
+        // BUILD CSR MATRIX (IAs)
+        matrix_csr->IA_size = (nrow + 1);
         matrix_csr->IA = (int *)safe_malloc(matrix_csr->IA_size);
         matrix_csr->IA = intdup(IA, matrix_csr->IA_size);
     }
