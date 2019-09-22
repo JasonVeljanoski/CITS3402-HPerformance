@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
     // DEFINE ALL THE LONG OPTIONS (e.g. --long_opt)
     int scalar_multiplication, trace, addition, transpose, matrix_multiplication; /* long opt flag variables */
     struct option longopts[] = {
-        {"sm", no_argument, &scalar_multiplication, 1},
+        {"sm", required_argument, &scalar_multiplication, 1},
         {"tr", no_argument, &trace, 1},
         {"ad", no_argument, &addition, 1},
         {"ts", no_argument, &transpose, 1},
@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
     *   -t %d sets thread_count
     *   -l sets lFlg to see if results should be logged to a file 
     */
-    while ((c = getopt_long(argc, argv, ":f:t:l", longopts, NULL)) != -1)
+    /* getopt_long stores the option index here. */
+    int option_index = 0;
+    while ((c = getopt_long(argc, argv, ":f:t:l", longopts, &option_index)) != -1)
     {
         switch (c)
         {
@@ -59,37 +61,54 @@ int main(int argc, char *argv[])
         }
     }
 
+    //print_CLAs(file, file2, thread_count, lFlg, scalar_multiplication, trace, addition, transpose, matrix_multiplication);
+
     // INIT MATRIX
-    struct Matrix *matrix1 = safe_malloc(sizeof(Matrix));
+    struct Matrix *matrix1 = (Matrix *)safe_malloc(sizeof(Matrix));
     file_reader(file, matrix1);
     //print_matrix_state(matrix1);
 
-    struct sparse_csr *matrix_csr = safe_malloc(sizeof(sparse_csr));
-    convert_sparse_csr(matrix1, matrix_csr);
+    //printf("DATA TYPE:\t %s\nNROWS:\t %d\nNCOLS:\t %d\nPAYLOAD: %s\n",matrix1->data_type, matrix1->nrow, matrix1->ncol, matrix1->payload);
 
-    // PROCESSING WITH A SECOND FILE
-    if (file2 != NULL)
-    {
-        struct Matrix *matrix2 = safe_malloc(sizeof(Matrix));
-        file_reader(file2, matrix2);
-        print_matrix_state(matrix2);
-
-        struct sparse_csr *matrix_csr2 = safe_malloc(sizeof(sparse_csr));
-        convert_sparse_csr(matrix2, matrix_csr2);
-        print_csr_state(matrix_csr2);
-
-        // DEALLOCATE ALLOCATED MEMORY
-        free_matrix_csr(matrix_csr2);
-        free_matrix(matrix2);
-    }
-
-    print_CLAs(file, file2, thread_count, lFlg, scalar_multiplication, trace, addition, transpose, matrix_multiplication); // debug
-    // DEBUG
+    struct sparse_csr *matrix_csr = (sparse_csr *)safe_malloc(sizeof(sparse_csr));
+    csr_function(matrix1, matrix_csr);
     //print_csr_state(matrix_csr);
 
+    // SINGLE FILE PROCESSING
+    // SPECIAL CASE OF SCALAR MULTIPLICATION
+    if (scalar_multiplication) {
+        int scalar = atoi(argv[option_index + 2]);
+        process_SM(matrix_csr, scalar);
+    }
+    else if (trace) 
+        process_TR(matrix_csr);
+
+    else if (transpose) 
+         process_TS(matrix_csr);
+    // TWO FILE PROCESSING
+    else
+    {
+        struct Matrix *matrix2 = (Matrix *)safe_malloc(sizeof(Matrix));
+        file_reader(file2, matrix2);
+        //print_matrix_state(matrix2);
+
+        struct sparse_csr *matrix_csr2 = (sparse_csr *)safe_malloc(sizeof(sparse_csr));
+        convert_sparse_csr(matrix2, matrix_csr2);
+        //print_csr_state(matrix_csr2);
+
+        if (matrix_multiplication)
+            process_MM(matrix_csr);
+        else if (addition)
+            process_ADD(matrix_csr);
+
+        // DEALLOCATE ALLOCATED MEMORY
+        free_matrix(matrix2);
+        free_matrix_csr(matrix_csr2);
+    }
+
     // DEALLOCATE ALLOCATED MEMORY
-    free_matrix_csr(matrix_csr);
     free_matrix(matrix1);
+    free_matrix_csr(matrix_csr);
 
     return 0;
 }

@@ -22,7 +22,8 @@ void print_CLAs(char *file, char *file2, int threadCount, int lFlg, int scalar_m
 // PRINT MATRIX STRUCT STATE
 void print_matrix_state(struct Matrix *matrix)
 {
-    int size = matrix->data_type_size + matrix->nrow_size + matrix->ncol_size + matrix->payload_size;
+    int size = sizeof(Matrix *) + matrix->data_type_length*sizeof(char) + matrix->nrow_size*sizeof(int) + matrix->ncol_size*sizeof(int) + matrix->payload_length*sizeof(char);
+    printf("\n\n%d\n\n", size);
     char *matrix_state = (char *)safe_malloc(size);
     sprintf(
         matrix_state,
@@ -36,6 +37,8 @@ void print_matrix_state(struct Matrix *matrix)
     printf("-------------\n");
     printf("%s\n", matrix_state);
     printf("-------------\n\n");
+
+    free(matrix_state);
 }
 
 // PRINT MATRIX STRUCT STATE
@@ -46,15 +49,15 @@ void print_csr_state(struct sparse_csr *matrix_csr)
 {
     if (strcmp(matrix_csr->data_type, INT) == 0)
     {
-        int size = matrix_csr->data_type_size;
+        int size = matrix_csr->data_type_size * sizeof(char);
 
-        char *matrix_state = (char *)safe_malloc(size);    
+        char *matrix_state = (char *)safe_malloc(size);
         sprintf(
             matrix_state,
             "DATA TYPE:\t %s\n",
             matrix_csr->data_type);
         printf("-------------\n");
-        printf("MATRIX STATE:\n");
+        printf("CSR MATRIX STATE:\n");
         printf("-------------\n");
         printf("%s\n", matrix_state);
         printf("NNZ:\t");
@@ -74,11 +77,14 @@ void print_csr_state(struct sparse_csr *matrix_csr)
             printf("%d\t", matrix_csr->JA[i]);
         printf("\n");
         printf("-------------\n\n");
-    }
-    else {
-        int size = matrix_csr->data_type_size;
 
-        char *matrix_state = (char *)safe_malloc(size);    
+        free(matrix_state);
+    }
+    else
+    {
+        int size = matrix_csr->data_type_size*sizeof(char);
+
+        char *matrix_state = (char *)safe_malloc(size);
         sprintf(
             matrix_state,
             "DATA TYPE:\t %s\n",
@@ -104,5 +110,7 @@ void print_csr_state(struct sparse_csr *matrix_csr)
             printf("%d\t", matrix_csr->JA[i]);
         printf("\n");
         printf("-------------\n\n");
+        
+        free(matrix_state);
     }
 }

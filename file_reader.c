@@ -26,9 +26,11 @@ void process_data_line(char *line, struct Matrix *matrix);
  */
 void file_reader(char *filepath, struct Matrix *matrix)
 {
-    FILE *fp;
+    FILE * fp;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
     int line_cnt;
-    char line[MAX_BUF_SIZE];
 
     //  ATTEMPT TO OPEN THE FILE FOR READ-ACCESS
     //  ERROR CHECK
@@ -37,12 +39,11 @@ void file_reader(char *filepath, struct Matrix *matrix)
         printf("cannot open file '%s'\n", filepath);
         exit(EXIT_FAILURE);
     }
-
+    
     //  READ EACH LINE FROM THE FILE,
     //  CHECKING FOR END-OF-FILE OR AN ERROR
     line_cnt = 0;
-    while (fgets(line, sizeof line, fp) != NULL)
-    {
+    while ((read = getline(&line, &len, fp)) != -1) {
         switch (line_cnt)
         {
         case DATA_TYPE_LINE:
@@ -64,8 +65,9 @@ void file_reader(char *filepath, struct Matrix *matrix)
         line_cnt++;
     }
 
-    //  CLOSE THE FILE
     fclose(fp);
+    if (line)
+        free(line);
 }
 
 
@@ -79,7 +81,7 @@ void process_data_type_line(char *line, struct Matrix *matrix)
     int type_size = strlen(line) * sizeof(char);
     matrix->data_type = (char *)safe_malloc(type_size);
     strcpy(matrix->data_type, line);
-    matrix->data_type_size = type_size;
+    matrix->data_type_length = strlen(line);
 }
 // UPDATE MATRIX STRUCT WITH NROWS OF MATRIX OF FILE
 void process_nrow_line(char *line, struct Matrix *matrix)
@@ -100,5 +102,5 @@ void process_data_line(char *line, struct Matrix *matrix)
     int data_size = strlen(line) * sizeof(char);
     matrix->payload = (char *)safe_malloc(data_size);
     strcpy(matrix->payload, line);
-    matrix->payload_size = data_size;
+    matrix->payload_length = strlen(line);
 }
