@@ -100,7 +100,8 @@ void ts_int_output_file(char *operation, char *filename, int threads, char *data
      * Open file in w (write) mode. 
      * "data/file1.txt" is complete path to create file
      */
-    fPtr = fopen("21980294.out", "w");
+    char *file_format = ts_format_filename();
+    fPtr = fopen(file_format, "w");
 
     /* fopen() return NULL if last operation was unsuccessful */
     if (fPtr == NULL)
@@ -133,6 +134,8 @@ void ts_int_output_file(char *operation, char *filename, int threads, char *data
 
     /* Close file to save file data */
     fclose(fPtr);
+
+    free(file_format);
 }
 
 // [double] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
@@ -170,7 +173,8 @@ void ts_double_output_file(char *operation, char *filename, int threads, char *d
      * Open file in w (write) mode. 
      * "data/file1.txt" is complete path to create file
      */
-    fPtr = fopen("21980294.out", "w");
+    char *file_format = ts_format_filename();
+    fPtr = fopen(file_format, "w");
 
     /* fopen() return NULL if last operation was unsuccessful */
     if (fPtr == NULL)
@@ -203,5 +207,7 @@ void ts_double_output_file(char *operation, char *filename, int threads, char *d
 
     /* Close file to save file data */
     fclose(fPtr);
+
+    free(file_format);
 }
 

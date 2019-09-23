@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <stdio.h>
+#include <time.h>
 
 // WELL FORMED FILE FORMAT, LINE INFO
 #define DATA_TYPE_LINE 0
@@ -80,6 +82,13 @@ extern void free_matrix(Matrix *);
 extern int is_square(struct sparse_csr *);
 extern int CSR_INT_x_y(sparse_csr *,int , int );
 extern double CSR_double_x_y(sparse_csr *,int , int );
+
+// TIME
+extern char *ad_format_filename(void);
+extern char *mm_format_filename(void);
+extern char *sm_format_filename(void);
+extern char *tr_format_filename(void);
+extern char *ts_format_filename(void);
 
 // DEBUG
 extern void print_matrix_state(struct Matrix *);

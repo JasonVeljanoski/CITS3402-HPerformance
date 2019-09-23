@@ -120,7 +120,8 @@ void add_int_output_file(char *operation, char *file1, char *file2, int threads,
      * Open file in w (write) mode. 
      * "data/file1.txt" is complete path to create file
      */
-    fPtr = fopen("21980294.out", "w");
+    char *file_format = ad_format_filename();
+    fPtr = fopen(file_format, "w");
 
     /* fopen() return NULL if last operation was unsuccessful */
     if (fPtr == NULL)
@@ -154,6 +155,7 @@ void add_int_output_file(char *operation, char *file1, char *file2, int threads,
 
     /* Close file to save file data */
     fclose(fPtr);
+    free(file_format);
 }
 
 
@@ -202,7 +204,8 @@ void add_double_output_file(char *operation, char *file1, char *file2, int threa
      * Open file in w (write) mode. 
      * "data/file1.txt" is complete path to create file
      */
-    fPtr = fopen("21980294.out", "w");
+    char *file_format = ad_format_filename();
+    fPtr = fopen(file_format, "w");
 
     /* fopen() return NULL if last operation was unsuccessful */
     if (fPtr == NULL)
@@ -236,5 +239,7 @@ void add_double_output_file(char *operation, char *file1, char *file2, int threa
 
     /* Close file to save file data */
     fclose(fPtr);
+
+    free(file_format);
 }
 

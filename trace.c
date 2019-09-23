@@ -38,7 +38,8 @@ void tr_int_output_file(char *operation, char *filename, int threads,int trace, 
      * Open file in w (write) mode. 
      * "data/file1.txt" is complete path to create file
      */
-    fPtr = fopen("21980294.out", "w");
+    char *file_format = tr_format_filename();
+    fPtr = fopen(file_format, "w");
 
     /* fopen() return NULL if last operation was unsuccessful */
     if (fPtr == NULL)
@@ -59,6 +60,8 @@ void tr_int_output_file(char *operation, char *filename, int threads,int trace, 
 
     /* Close file to save file data */
     fclose(fPtr);
+
+    free(file_format);
 }
 
 void tr_double_output_file(char *operation, char *filename, int threads,double trace, double convert_time, double operation_time)
@@ -70,7 +73,8 @@ void tr_double_output_file(char *operation, char *filename, int threads,double t
      * Open file in w (write) mode. 
      * "data/file1.txt" is complete path to create file
      */
-    fPtr = fopen("21980294.out", "w");
+    char *file_format = tr_format_filename();
+    fPtr = fopen(file_format, "w");
 
     /* fopen() return NULL if last operation was unsuccessful */
     if (fPtr == NULL)
@@ -91,6 +95,8 @@ void tr_double_output_file(char *operation, char *filename, int threads,double t
 
     /* Close file to save file data */
     fclose(fPtr);
+
+    free(file_format);
 }
 
 
