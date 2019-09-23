@@ -103,10 +103,12 @@ int main(int argc, char *argv[])
             process_TR_float(matrix_csr, file, thread_count);
         }
 
-    else if (transpose) {
+    else if (transpose)
+    {
         if (strcmp(matrix_csr->data_type, INT) == 0)
         {
-            process_TS_int(matrix_csr, file, thread_count);        }
+            process_TS_int(matrix_csr, file, thread_count);
+        }
         else
         {
             process_TS_float(matrix_csr, file, thread_count);
@@ -117,13 +119,20 @@ int main(int argc, char *argv[])
     {
         struct Matrix *matrix2 = (Matrix *)safe_malloc(sizeof(Matrix));
         file_reader(file2, matrix2);
-        //print_matrix_state(matrix2);
 
         struct sparse_csr *matrix_csr2 = (sparse_csr *)safe_malloc(sizeof(sparse_csr));
         matrix_to_csr(matrix2, matrix_csr2);
 
-        if (matrix_multiplication)
-            process_TS_int(matrix_csr2, file, thread_count);
+        if (matrix_multiplication) {
+            if (strcmp(matrix_csr->data_type, INT) == 0)
+            {
+                process_MM_int(matrix_csr, matrix_csr2, file, file2, thread_count);
+            }
+            else
+            {
+                process_MM_float(matrix_csr, matrix_csr2, file, file2, thread_count);
+            }
+        }
         else if (addition)
         {
             if (strcmp(matrix_csr->data_type, INT) == 0)
