@@ -103,8 +103,15 @@ int main(int argc, char *argv[])
             process_TR_float(matrix_csr, file, thread_count);
         }
 
-    else if (transpose)
-        process_TS(matrix_csr);
+    else if (transpose) {
+        if (strcmp(matrix_csr->data_type, INT) == 0)
+        {
+            process_TS_int(matrix_csr, file, thread_count);        }
+        else
+        {
+            process_TS_float(matrix_csr, file, thread_count);
+        }
+    }
     // TWO FILE PROCESSING
     else
     {
@@ -116,7 +123,7 @@ int main(int argc, char *argv[])
         matrix_to_csr(matrix2, matrix_csr2);
 
         if (matrix_multiplication)
-            process_MM(matrix_csr);
+            process_TS_int(matrix_csr2, file, thread_count);
         else if (addition)
         {
             if (strcmp(matrix_csr->data_type, INT) == 0)

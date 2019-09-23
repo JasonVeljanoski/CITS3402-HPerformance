@@ -61,6 +61,10 @@ extern void process_TR_float(struct sparse_csr *, char *, int );
 extern void process_ADD_int(struct sparse_csr *, struct sparse_csr *, char *, char *, int );
 extern void process_ADD_float(struct sparse_csr *, struct sparse_csr *, char *, char *, int );
 
+// TRANSPOSE
+extern void process_TS_int(struct sparse_csr *, char *, int );
+extern void process_TS_float(struct sparse_csr *, char *, int);
+
 // GENERAL
 extern void trim_line(char line[]);
 extern void *safe_malloc(size_t);
