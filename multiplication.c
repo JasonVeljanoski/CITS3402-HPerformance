@@ -7,7 +7,8 @@ int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2
 double *double_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
 void mm_int_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
 void mm_double_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
-
+void mm_int_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
+void mm_double_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
 
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
@@ -41,6 +42,8 @@ void process_MM_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char
 
     if (doLog)
         mm_int_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    else
+        mm_int_terminal_out(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -76,6 +79,8 @@ void process_MM_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, c
 
     if (doLog)
         mm_double_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    else
+        mm_double_terminal_out(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -114,6 +119,10 @@ int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2
                 sum = 0; // reset sum
             }
         }
+    }
+    else {
+        fprintf(stderr, "Error - matrix1 rows != matrix2 cols OR data types are different\n");
+        exit(0);
     }
     // returns added matrice or matrix1 on error
     return matrix_line;
@@ -197,6 +206,10 @@ double *double_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *m
             }
         }
     }
+    else {
+        fprintf(stderr, "Error - matrix1 rows != matrix2 cols OR data types are different\n");
+        exit(0);
+    }
     // returns added matrice or matrix1 on error
     return matrix_line;
 }
@@ -247,4 +260,52 @@ void mm_double_output_file(char *operation, char *file1, char *file2, int thread
     fclose(fPtr);
 
     free(file_format);
+}
+
+void mm_double_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);//writing data into file
+    printf("%s\n", file1);//writing data into file  
+    printf("%s\n", file2);//writing data into file  
+    printf("%d\n", threads);//writing data into file  
+    printf("%s\n", data_type);//writing data into file  
+    printf("%d\n", nrow);//writing data into file  
+    printf("%d\n", ncol);//writing data into file  
+    
+    // WRITE MATRIX IN
+    int size = nrow * ncol;
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        printf("%f ", matrix_line[i]); //writing data into file  
+    }
+    printf("\n");
+    
+    printf("%f\n",convert_time);//writing data into file 
+    printf("%f\n",operation_time);//writing data into file  
+    /* write data ended */
+}
+
+void mm_int_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);//writing data into file
+    printf("%s\n", file1);//writing data into file  
+    printf("%s\n", file2);//writing data into file  
+    printf("%d\n", threads);//writing data into file  
+    printf("%s\n", data_type);//writing data into file  
+    printf("%d\n", nrow);//writing data into file  
+    printf("%d\n", ncol);//writing data into file  
+    
+    // WRITE MATRIX IN
+    int size = nrow * ncol;
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        printf("%d ", matrix_line[i]); //writing data into file  
+    }
+    printf("\n");
+    
+    printf("%f\n",convert_time);//writing data into file 
+    printf("%f\n",operation_time);//writing data into file  
+    /* write data ended */
 }

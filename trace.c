@@ -7,6 +7,8 @@ int get_trace_int(struct sparse_csr *matrix);
 void tr_int_output_file(char *operation, char *filename, int threads, int trace, double convert_time, double operation_time);
 double get_trace_double(struct sparse_csr *matrix);
 void tr_double_output_file(char *operation, char *filename, int threads, double trace, double convert_time, double operation_time);
+void tr_int_terminal_out(char *operation, char *filename, int threads, int trace, double convert_time, double operation_time);
+void tr_double_terminal_out(char *operation, char *filename, int threads, double trace, double convert_time, double operation_time);
 
 /**
  * PROCESSING
@@ -27,6 +29,8 @@ void process_TR_int(struct sparse_csr *matrix, char *filename, int threads, int 
 
     if (doLog)
         tr_int_output_file(operation, filename, threads, trace, file_load_conv_time, time_taken);
+    else
+        tr_int_terminal_out(operation, filename, threads, trace, file_load_conv_time, time_taken);
 }
 // create file for double trace
 void process_TR_double(struct sparse_csr *matrix, char *filename, int threads, int doLog, double file_load_conv_time)
@@ -38,13 +42,15 @@ void process_TR_double(struct sparse_csr *matrix, char *filename, int threads, i
 
     start = clock();
     
-    double trace = get_trace_int(matrix);
+    double trace = get_trace_double(matrix);
 
     end = clock();
     time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
 
     if (doLog)
         tr_double_output_file(operation, filename, threads, trace, file_load_conv_time, time_taken);
+    else
+        tr_double_terminal_out(operation, filename, threads, trace, file_load_conv_time, time_taken);
 }
 
 /**
@@ -132,6 +138,10 @@ int get_trace_int(struct sparse_csr *matrix)
             trace_int += CSR_INT_x_y(matrix, i, i);
         }
     }
+    else {
+        fprintf(stderr, "Error - not square matrix\n");
+        exit(0);
+    }
     return trace_int;
 }
 
@@ -147,5 +157,31 @@ double get_trace_double(struct sparse_csr *matrix)
             trace_double += CSR_double_x_y(matrix, i, i);
         }
     }
+    else {
+        fprintf(stderr, "Error - not square matrix\n");
+        exit(0);
+    }
     return trace_double;
+}
+
+void tr_int_terminal_out(char *operation, char *filename, int threads, int trace, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);      //writing data into file
+    printf("%s\n", filename);       //writing data into file
+    printf("%d\n", threads);        //writing data into file
+    printf("%d\n", trace);          //writing data into file
+    printf("%f\n", convert_time);   //writing data into file
+    printf("%f\n", operation_time); //writing data into file
+    /* write data ended */
+}
+
+void tr_double_terminal_out(char *operation, char *filename, int threads, double trace, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);      //writing data into file
+    printf("%s\n", filename);       //writing data into file
+    printf("%d\n", threads);        //writing data into file
+    printf("%f\n", trace);          //writing data into file
+    printf("%f\n", convert_time);   //writing data into file
+    printf("%f\n", operation_time); //writing data into file
+    /* write data ended */
 }

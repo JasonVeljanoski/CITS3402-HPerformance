@@ -4,6 +4,10 @@ int *output_sm_matrix_int(struct sparse_csr *matrix, int scalar);
 double *double_output_sm_matrix(struct sparse_csr *matrix, int scalar);
 void sm_int_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
 void sm_double_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
+void sm_double_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, double *matrix_line, double convert_time, double operation_time);
+void sm_int_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, int *matrix_line, double convert_time, double operation_time);
+
+
 
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
@@ -36,6 +40,8 @@ void process_SM_int(struct sparse_csr *matrix, int scalar, char *filename, int t
 
     if(doLog)
         sm_int_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    else
+        sm_int_terminal_out(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -72,6 +78,8 @@ void double_process_SM(struct sparse_csr *matrix, int scalar, char *filename, in
 
     if (doLog)
         sm_double_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    else
+        sm_double_terminal_out(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -231,4 +239,51 @@ void sm_int_output_file(char *operation, char *filename, int threads, char *data
     fclose(fPtr);
 
     free(file_format);
+}
+
+
+void sm_int_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, int *matrix_line, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);//writing data into file
+    printf("%s\n", filename);//writing data into file  
+    printf("%d\n", threads);//writing data into file  
+    printf("%s\n", data_type);//writing data into file  
+    printf("%d\n", nrows);//writing data into file  
+    printf("%d\n", ncols);//writing data into file  
+    
+    // WRITE MATRIX IN
+    int size = nrows * ncols;
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        printf("%d ", matrix_line[i]); //writing data into file  
+    }
+    printf("\n");
+    
+    printf("%f\n",convert_time);//writing data into file 
+    printf("%f\n",operation_time);//writing data into file  
+    /* write data ended */
+}
+
+void sm_double_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, double *matrix_line, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);//writing data into file
+    printf("%s\n", filename);//writing data into file  
+    printf("%d\n", threads);//writing data into file  
+    printf("%s\n", data_type);//writing data into file  
+    printf("%d\n", nrows);//writing data into file  
+    printf("%d\n", ncols);//writing data into file  
+    
+    // WRITE MATRIX IN
+    int size = nrows * ncols;
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        printf("%f ", matrix_line[i]); //writing data into file  
+    }
+    printf("\n");
+    
+    printf("%f\n",convert_time);//writing data into file 
+    printf("%f\n",operation_time);//writing data into file  
+    /* write data ended */
 }

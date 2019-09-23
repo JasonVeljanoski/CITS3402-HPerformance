@@ -8,6 +8,10 @@ void add_int_output_file(char *operation, char *file1, char *file2, int threads,
 
 double *double_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
 void add_double_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
+void ad_double_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
+void ad_int_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
+
+
 
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
@@ -41,6 +45,9 @@ void process_ADD_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, cha
 
     if (doLog) 
         add_int_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    else
+        ad_int_terminal_out(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -79,6 +86,8 @@ void process_ADD_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, 
 
     if (doLog)
         add_double_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    else
+        ad_double_terminal_out(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -109,6 +118,10 @@ int *output_add_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix
             // note that we are changing matrix1 (but we dont need it after I am assuming)
             matrix1->NNZ_int[i] = matrix1->NNZ_int[i] + matrix2->NNZ_int[i];
         }
+    }
+    else {
+        fprintf(stderr, "Error - Dimensions are different OR data types are different\n");
+        exit(0);
     }
 
     // RECREATE NON SPARSE MATRIX FOR FILE OUTPUT
@@ -177,6 +190,30 @@ void add_int_output_file(char *operation, char *file1, char *file2, int threads,
     free(file_format);
 }
 
+void ad_int_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);//writing data into file
+    printf("%s\n", file1);//writing data into file  
+    printf("%s\n", file2);//writing data into file  
+    printf("%d\n", threads);//writing data into file  
+    printf("%s\n", data_type);//writing data into file  
+    printf("%d\n", nrow);//writing data into file  
+    printf("%d\n", ncol);//writing data into file  
+    
+    // WRITE MATRIX IN
+    int size = nrow * ncol;
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        printf("%d ", matrix_line[i]); //writing data into file  
+    }
+    printf("\n");
+    
+    printf("%f\n",convert_time);//writing data into file 
+    printf("%f\n",operation_time);//writing data into file  
+    /* write data ended */
+}
+
 
 // [double] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
 double *double_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2)
@@ -193,6 +230,10 @@ double *double_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *
             // note that we are changing matrix1 (but we dont need it after I am assuming)
             matrix1->NNZ_double[i] = matrix1->NNZ_double[i] + matrix2->NNZ_double[i];
         }
+    }
+    else {
+        fprintf(stderr, "Error - Dimensions are different OR data types are different\n");
+        exit(0);
     }
 
     // RECREATE NON SPARSE MATRIX FOR FILE OUTPUT
@@ -260,5 +301,29 @@ void add_double_output_file(char *operation, char *file1, char *file2, int threa
     fclose(fPtr);
 
     free(file_format);
+}
+
+void ad_double_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);//writing data into file
+    printf("%s\n", file1);//writing data into file  
+    printf("%s\n", file2);//writing data into file  
+    printf("%d\n", threads);//writing data into file  
+    printf("%s\n", data_type);//writing data into file  
+    printf("%d\n", nrow);//writing data into file  
+    printf("%d\n", ncol);//writing data into file  
+    
+    // WRITE MATRIX IN
+    int size = nrow * ncol;
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        printf("%f ", matrix_line[i]); //writing data into file  
+    }
+    printf("\n");
+    
+    printf("%f\n",convert_time);//writing data into file 
+    printf("%f\n",operation_time);//writing data into file  
+    /* write data ended */
 }
 

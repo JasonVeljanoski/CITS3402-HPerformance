@@ -4,6 +4,8 @@ int *output_ts_matrix_int(struct sparse_csr *matrix);
 void ts_int_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
 void ts_double_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
 double *double_output_ts_matrix(struct sparse_csr *matrix);
+void ts_double_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, double *matrix_line, double convert_time, double operation_time);
+void ts_int_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, int *matrix_line, double convert_time, double operation_time);
 
 /**
  * PROCESS INT TYPE TRANSPOSE DATA
@@ -37,6 +39,8 @@ void process_TS_int(struct sparse_csr *matrix, char *filename, int threads, int 
 
     if (doLog)
         ts_int_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    else
+        ts_int_terminal_out(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -73,6 +77,8 @@ void process_TS_double(struct sparse_csr *matrix, char *filename, int threads, i
 
     if (doLog)
         ts_double_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
+    else
+        ts_double_terminal_out(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -226,4 +232,50 @@ void ts_double_output_file(char *operation, char *filename, int threads, char *d
     fclose(fPtr);
 
     free(file_format);
+}
+
+void ts_int_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, int *matrix_line, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);//writing data into file
+    printf("%s\n", filename);//writing data into file  
+    printf("%d\n", threads);//writing data into file  
+    printf("%s\n", data_type);//writing data into file  
+    printf("%d\n", nrows);//writing data into file  
+    printf("%d\n", ncols);//writing data into file  
+    
+    // WRITE MATRIX IN
+    int size = nrows * ncols;
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        printf("%d ", matrix_line[i]); //writing data into file  
+    }
+    printf("\n");
+    
+    printf("%f\n",convert_time);//writing data into file 
+    printf("%f\n",operation_time);//writing data into file  
+    /* write data ended */
+}
+
+void ts_double_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, double *matrix_line, double convert_time, double operation_time) {
+    /* Write data to file */
+    printf("%s\n", operation);//writing data into file
+    printf("%s\n", filename);//writing data into file  
+    printf("%d\n", threads);//writing data into file  
+    printf("%s\n", data_type);//writing data into file  
+    printf("%d\n", nrows);//writing data into file  
+    printf("%d\n", ncols);//writing data into file  
+    
+    // WRITE MATRIX IN
+    int size = nrows * ncols;
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        printf("%f ", matrix_line[i]); //writing data into file  
+    }
+    printf("\n");
+    
+    printf("%f\n",convert_time);//writing data into file 
+    printf("%f\n",operation_time);//writing data into file  
+    /* write data ended */
 }
