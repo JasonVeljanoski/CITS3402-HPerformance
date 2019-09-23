@@ -12,7 +12,7 @@
 
 #define MAX_BUF_SIZE 2048
 #define INT "int"
-#define FLOAT "float"
+#define double "double"
 
 // SPARSE_FORMAT
 
@@ -20,7 +20,7 @@ typedef struct sparse_csr {
   int nrow; int ncol;
   char *data_type; int data_type_size;
   int *NNZ_int; int NNZ_int_size; // Non Zeros vals in row-major order
-  float *NNZ_float; int NNZ_float_size; // Non Zeros vals in row-major order
+  double *NNZ_double; int NNZ_double_size; // Non Zeros vals in row-major order
   int *IA; int IA_size; // num of ements in each row (cumulitive)
   int *JA; int JA_size; // col index of each nnz
 } sparse_csr;
@@ -59,11 +59,11 @@ extern void free_matrix(Matrix *);
 extern int *intdup(int const *, size_t);
 extern int is_square(struct sparse_csr *);
 extern int CSR_INT_x_y(sparse_csr *,int , int );
-extern float CSR_FLOAT_x_y(sparse_csr *,int , int );
+extern double CSR_double_x_y(sparse_csr *,int , int );
 
 // DEBUG
 extern void print_matrix_state(struct Matrix *);
 extern void print_CLAs(char *,char *,int,int,int,int,int,int,int);
 extern void print_csr_state(struct sparse_csr *);
 extern void print_int_star(int *, int );
-extern void print_float_star(float *, int );
+extern void print_double_star(double *, int );

@@ -4,9 +4,9 @@
  * HELPER FUNCTIONS
  */
 int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
-float *float_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
+double *double_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
 void mm_int_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
-void mm_float_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, float *matrix_line, double convert_time, double operation_time);
+void mm_double_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
 
 
 /**
@@ -37,7 +37,7 @@ void process_MM_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char
     free(matrix_line);
 }
 
-void process_MM_float(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char *file1, char *file2, int threads)
+void process_MM_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char *file1, char *file2, int threads)
 {
     /* TYPE OF OPERATION PART */
     // OPERATION REQUESTED
@@ -54,17 +54,13 @@ void process_MM_float(struct sparse_csr *matrix1, struct sparse_csr *matrix2, ch
     // COLUMNS
     int ncols = matrix2->ncol;
     // THE NEW MATRIX
-    float *matrix_line = float_output_mm_matrix(matrix1, matrix2);
+    double *matrix_line = double_output_mm_matrix(matrix1, matrix2);
 
-    mm_float_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, 1, 2);
+    mm_double_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, 1, 2);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
 }
-
-
-
-
 
 /**
  * HELPER FUNCTIONS
@@ -149,17 +145,17 @@ void mm_int_output_file(char *operation, char *file1, char *file2, int threads, 
     fclose(fPtr);
 }
 
-// FLOAT OUTPUT MATRIX AFTER MM
-float *float_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2)
+// double OUTPUT MATRIX AFTER MM
+double *double_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2)
 {
-    float sum = 0;
+    double sum = 0;
     int first_nrows = matrix1->nrow;
     int first_ncols = matrix1->ncol;
     int sec_nrows = matrix2->nrow;
     int sec_ncols = matrix2->ncol;
 
     int size = first_nrows * sec_ncols;
-    float *matrix_line = (float *)safe_malloc(sizeof(float) * size);
+    double *matrix_line = (double *)safe_malloc(sizeof(double) * size);
     int index = 0;
 
     // make sure cols of matrix1 == rows of matrix2 AND datatype is same for both
@@ -172,7 +168,7 @@ float *float_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *mat
             {
                 for (k = 0; k < sec_nrows; k++)
                 {
-                    sum += CSR_FLOAT_x_y(matrix1, i, k) * CSR_FLOAT_x_y(matrix2, k, j);
+                    sum += CSR_double_x_y(matrix1, i, k) * CSR_double_x_y(matrix2, k, j);
                 }
                 matrix_line[index] = sum;
                 index++;
@@ -184,7 +180,7 @@ float *float_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *mat
     return matrix_line;
 }
 
-void mm_float_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, float *matrix_line, double convert_time, double operation_time)
+void mm_double_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time)
 {
     /* File pointer to hold reference to our file */
     FILE *fPtr;

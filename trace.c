@@ -5,8 +5,8 @@
  */
 int get_trace_int(struct sparse_csr *matrix);
 void tr_int_output_file(char *operation, char *filename, int threads,int trace, double convert_time, double operation_time);
-float get_trace_float(struct sparse_csr *matrix);
-void tr_float_output_file(char *operation, char *filename, int threads,float trace, double convert_time, double operation_time);
+double get_trace_double(struct sparse_csr *matrix);
+void tr_double_output_file(char *operation, char *filename, int threads,double trace, double convert_time, double operation_time);
 
 /**
  * PROCESSING
@@ -17,11 +17,11 @@ void process_TR_int(struct sparse_csr *matrix, char *filename, int threads)
     char *operation = "tr";
     tr_int_output_file(operation, filename, threads, get_trace_int(matrix), 1, 2);
 }
-// create file for float trace
-void process_TR_float(struct sparse_csr *matrix, char *filename, int threads)
+// create file for double trace
+void process_TR_double(struct sparse_csr *matrix, char *filename, int threads)
 {
     char *operation = "tr";
-    tr_float_output_file(operation, filename, threads, get_trace_float(matrix), 1, 2);
+    tr_double_output_file(operation, filename, threads, get_trace_double(matrix), 1, 2);
 }
 
 
@@ -61,7 +61,7 @@ void tr_int_output_file(char *operation, char *filename, int threads,int trace, 
     fclose(fPtr);
 }
 
-void tr_float_output_file(char *operation, char *filename, int threads,float trace, double convert_time, double operation_time)
+void tr_double_output_file(char *operation, char *filename, int threads,double trace, double convert_time, double operation_time)
 {
     /* File pointer to hold reference to our file */
     FILE *fPtr;
@@ -110,17 +110,17 @@ int get_trace_int(struct sparse_csr *matrix)
     return trace_int;
 }
 
-float get_trace_float(struct sparse_csr *matrix)
+double get_trace_double(struct sparse_csr *matrix)
 {
-    float trace_float = 0;
+    double trace_double = 0;
     if (is_square(matrix))
     {
         int nrow = matrix->nrow; // or col
         int i;
         for (i = 0; i < nrow; i++)
         {
-            trace_float += CSR_FLOAT_x_y(matrix, i, i);
+            trace_double += CSR_double_x_y(matrix, i, i);
         }
     }
-    return trace_float;
+    return trace_double;
 }

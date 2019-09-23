@@ -47,7 +47,7 @@ void free_matrix_csr(sparse_csr *matrix_csr)
     if (strcmp(matrix_csr->data_type, INT) == 0)
         free(matrix_csr->NNZ_int);
     else
-        free(matrix_csr->NNZ_float);
+        free(matrix_csr->NNZ_double);
     free(matrix_csr->data_type);
     free(matrix_csr->IA);
     free(matrix_csr->JA);
@@ -82,8 +82,8 @@ int CSR_INT_x_y(sparse_csr *matrix, int x, int y)
     return 0;
 }
 
-// GET (x,y) COORDINATE OF CSR_FLOAT MATRIX
-float CSR_FLOAT_x_y(sparse_csr *matrix, int x, int y)
+// GET (x,y) COORDINATE OF CSR_double MATRIX
+double CSR_double_x_y(sparse_csr *matrix, int x, int y)
 {
 
     int i;
@@ -95,7 +95,7 @@ float CSR_FLOAT_x_y(sparse_csr *matrix, int x, int y)
         if (matrix->JA[i] == y)
         {
 
-            return matrix->NNZ_float[i];
+            return matrix->NNZ_double[i];
         }
     }
     // OTHERWISE matrix(x,y) = 0.0

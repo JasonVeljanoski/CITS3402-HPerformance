@@ -1,9 +1,9 @@
 #include "sparse_matrices.h"
 
 int *output_sm_matrix_int(struct sparse_csr *matrix, int scalar);
-float *float_output_sm_matrix(struct sparse_csr *matrix, int scalar);
+double *double_output_sm_matrix(struct sparse_csr *matrix, int scalar);
 void sm_int_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
-void sm_float_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, float *matrix_line, double convert_time, double operation_time);
+void sm_double_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
 
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
@@ -33,9 +33,9 @@ void process_SM_int(struct sparse_csr *matrix, int scalar, char *filename, int t
 }
 
 /**
- * PROCESS FLOAT TYPE SCALAR MULTIPLY DATA
+ * PROCESS double TYPE SCALAR MULTIPLY DATA
  */
-void float_process_SM(struct sparse_csr *matrix, int scalar, char *filename, int threads)
+void double_process_SM(struct sparse_csr *matrix, int scalar, char *filename, int threads)
 {
     /* TYPE OF OPERATION PART */
     // OPERATION REQUESTED
@@ -51,9 +51,9 @@ void float_process_SM(struct sparse_csr *matrix, int scalar, char *filename, int
     // COLUMNS
     int ncols = matrix->ncol;
     // THE NEW MATRIX
-    float *matrix_line = float_output_sm_matrix(matrix, scalar);
+    double *matrix_line = double_output_sm_matrix(matrix, scalar);
 
-    sm_float_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, 1, 2);
+    sm_double_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, 1, 2);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -63,14 +63,14 @@ void float_process_SM(struct sparse_csr *matrix, int scalar, char *filename, int
  * HELPER FUNCTIONS
  */
 
-// [FLOAT] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
-float *float_output_sm_matrix(struct sparse_csr *matrix, int scalar)
+// [double] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
+double *double_output_sm_matrix(struct sparse_csr *matrix, int scalar)
 {
     // DO SCALAR MULTIPLICATION
     int i;
-    for (i = 0; i < matrix->NNZ_float_size; i++)
+    for (i = 0; i < matrix->NNZ_double_size; i++)
     {
-        matrix->NNZ_float[i] *= scalar;
+        matrix->NNZ_double[i] *= scalar;
     }
 
     // RECREATE NON SPARSE MATRIX FOR FILE OUTPUT
@@ -78,20 +78,20 @@ float *float_output_sm_matrix(struct sparse_csr *matrix, int scalar)
     int ncol = matrix->ncol;
     int size = nrow * ncol;
 
-    float *matrix_line = (float *)safe_malloc(sizeof(float) * size);
+    double *matrix_line = (double *)safe_malloc(sizeof(double) * size);
     int k = 0;
     for (i = 0; i < nrow; i++)
     {
         int j;
         for (j = 0; j < ncol; j++)
         {
-            matrix_line[k] = CSR_FLOAT_x_y(matrix, i, j);
+            matrix_line[k] = CSR_double_x_y(matrix, i, j);
             k++;
         }
     }
     return matrix_line;
 }
-void sm_float_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, float *matrix_line, double convert_time, double operation_time)
+void sm_double_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time)
 {
     /* File pointer to hold reference to our file */
     FILE *fPtr;

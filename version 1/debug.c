@@ -95,8 +95,8 @@ void print_csr_state(struct sparse_csr *matrix_csr)
         printf("NNZ:\t");
         int i;
         // PRINT NNZ's
-        for (i = 0; i < matrix_csr->NNZ_float_size; i++)
-            printf("%f\t", matrix_csr->NNZ_float[i]);
+        for (i = 0; i < matrix_csr->NNZ_double_size; i++)
+            printf("%f\t", matrix_csr->NNZ_double[i]);
         printf("\n");
         printf("IA:\t");
         // PRINT IA's
@@ -125,7 +125,7 @@ void print_int_star(int *a, int n)
     printf("\n");
 }
 
-void print_float_star(float *a, int n)
+void print_double_star(double *a, int n)
 {
     int i;
     for (i = 0; i < n; i++)

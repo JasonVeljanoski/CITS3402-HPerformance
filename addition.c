@@ -6,8 +6,8 @@
 int *output_add_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
 void add_int_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
 
-float *float_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
-void add_float_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, float *matrix_line, double convert_time, double operation_time);
+double *double_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
+void add_double_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
 
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
@@ -40,7 +40,7 @@ void process_ADD_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, cha
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
  */
-void process_ADD_float(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char *file1, char *file2, int threads)
+void process_ADD_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char *file1, char *file2, int threads)
 {
     /* TYPE OF OPERATION PART */
     // OPERATION REQUESTED
@@ -57,9 +57,9 @@ void process_ADD_float(struct sparse_csr *matrix1, struct sparse_csr *matrix2, c
     // COLUMNS
     int ncols = matrix1->ncol;
     // THE NEW MATRIX
-    float *matrix_line = float_output_add_matrix(matrix1, matrix2);
+    double *matrix_line = double_output_add_matrix(matrix1, matrix2);
 
-    add_float_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, 1, 2);
+    add_double_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, 1, 2);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -157,11 +157,11 @@ void add_int_output_file(char *operation, char *file1, char *file2, int threads,
 }
 
 
-// [FLOAT] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
-float *float_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2)
+// [double] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
+double *double_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2)
 {
     // DO ADDITION
-    int length = matrix1->NNZ_float_size;
+    int length = matrix1->NNZ_double_size;
     int i;
 
     // make sure (n_1,m_1) == (n_2, m_2) AND data types are the same
@@ -170,7 +170,7 @@ float *float_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *ma
         for (i = 0; i < length; i++)
         {
             // note that we are changing matrix1 (but we dont need it after I am assuming)
-            matrix1->NNZ_float[i] = matrix1->NNZ_float[i] + matrix2->NNZ_float[i];
+            matrix1->NNZ_double[i] = matrix1->NNZ_double[i] + matrix2->NNZ_double[i];
         }
     }
 
@@ -179,14 +179,14 @@ float *float_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *ma
     int ncol = matrix1->ncol;
     int size = nrow * ncol;
 
-    float *matrix_line = (float *)safe_malloc(sizeof(float) * size);
+    double *matrix_line = (double *)safe_malloc(sizeof(double) * size);
     int k = 0;
     for (i = 0; i < nrow; i++)
     {
         int j;
         for (j = 0; j < ncol; j++)
         {
-            matrix_line[k] = CSR_FLOAT_x_y(matrix1, i, j);
+            matrix_line[k] = CSR_double_x_y(matrix1, i, j);
             k++;
         }
     }
@@ -194,7 +194,7 @@ float *float_output_add_matrix(struct sparse_csr *matrix1, struct sparse_csr *ma
     return matrix_line;
 }
 
-void add_float_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, float *matrix_line, double convert_time, double operation_time) {
+void add_double_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time) {
     /* File pointer to hold reference to our file */
     FILE *fPtr;
 

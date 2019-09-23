@@ -95,8 +95,8 @@ void print_NNZ_f(struct sparse_csr *matrix_csr)
 {
     // PRINT NNZ's
     int i;
-    for (i = 0; i < matrix_csr->NNZ_float_size; i++)
-        printf("%f\t", matrix_csr->NNZ_float[i]);
+    for (i = 0; i < matrix_csr->NNZ_double_size; i++)
+        printf("%f\t", matrix_csr->NNZ_double[i]);
     printf("\n");
 }
 
@@ -122,7 +122,7 @@ void print_line_matrix_int(int *matrix_line, struct sparse_csr *matrix) {
     }
 }
 
-void float_print_line_matrix(float *matrix_line, struct sparse_csr *matrix) {
+void double_print_line_matrix(double *matrix_line, struct sparse_csr *matrix) {
     int size = matrix->ncol * matrix->nrow;
     int j;
     for (j = 0; j < size; j++)

@@ -2,8 +2,8 @@
 
 int *output_ts_matrix_int(struct sparse_csr *matrix);
 void ts_int_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
-void ts_float_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, float *matrix_line, double convert_time, double operation_time);
-float *float_output_ts_matrix(struct sparse_csr *matrix);
+void ts_double_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
+double *double_output_ts_matrix(struct sparse_csr *matrix);
 
 /**
  * PROCESS INT TYPE TRANSPOSE DATA
@@ -33,9 +33,9 @@ void process_TS_int(struct sparse_csr *matrix, char *filename, int threads)
 }
 
 /**
- * PROCESS FLOAT TYPE TRANSPOSE DATA
+ * PROCESS double TYPE TRANSPOSE DATA
  */
-void process_TS_float(struct sparse_csr *matrix, char *filename, int threads)
+void process_TS_double(struct sparse_csr *matrix, char *filename, int threads)
 {
     /* TYPE OF OPERATION PART */
     // OPERATION REQUESTED
@@ -51,9 +51,9 @@ void process_TS_float(struct sparse_csr *matrix, char *filename, int threads)
     // COLUMNS
     int ncols = matrix->nrow;
     // THE NEW MATRIX
-    float *matrix_line = float_output_ts_matrix(matrix);
+    double *matrix_line = double_output_ts_matrix(matrix);
 
-    ts_float_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, 1, 2);
+    ts_double_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, 1, 2);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -135,15 +135,15 @@ void ts_int_output_file(char *operation, char *filename, int threads, char *data
     fclose(fPtr);
 }
 
-// [FLOAT] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
-float *float_output_ts_matrix(struct sparse_csr *matrix)
+// [double] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
+double *double_output_ts_matrix(struct sparse_csr *matrix)
 {
     // RECREATE NON SPARSE MATRIX FOR FILE OUTPUT
     int nrow = matrix->nrow;
     int ncol = matrix->ncol;
     int size = nrow * ncol;
 
-    float *matrix_line = (float *)safe_malloc(sizeof(float) * size);
+    double *matrix_line = (double *)safe_malloc(sizeof(double) * size);
     int k = 0;
     int i;
     for (i = 0; i < ncol; i++)
@@ -151,7 +151,7 @@ float *float_output_ts_matrix(struct sparse_csr *matrix)
         int j;
         for (j = 0; j < nrow; j++)
         {
-            matrix_line[k] = CSR_FLOAT_x_y(matrix, j, i);
+            matrix_line[k] = CSR_double_x_y(matrix, j, i);
             k++;
         }
     }
@@ -161,7 +161,7 @@ float *float_output_ts_matrix(struct sparse_csr *matrix)
 }
 
 // [INT] CREATE OUTPUT FILE
-void ts_float_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, float *matrix_line, double convert_time, double operation_time)
+void ts_double_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time)
 {
     /* File pointer to hold reference to our file */
     FILE *fPtr;

@@ -17,10 +17,10 @@ void process_data_line(char *line, struct Matrix *matrix);
  * 
  * FILE FORMAT: (4 lines)
  * 
- * 1. data type (int or float)
+ * 1. data type (int or double)
  * 2. rows (n > 0)
  * 3. columns (m > 0)
- * 4. space separated int/floats representing a n x m matrix
+ * 4. space separated int/doubles representing a n x m matrix
  * 
  * Assumptions: All files are well formed
  */

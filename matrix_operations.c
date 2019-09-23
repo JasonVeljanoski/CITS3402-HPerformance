@@ -7,7 +7,7 @@ void process_TR(struct sparse_csr *matrix)
     {
         //printf("row: %d\ncol: %d\n", matrix->nrow,matrix->ncol);
         int trace_int = 0;
-        float trace_float = 0;
+        double trace_double = 0;
         int nrow = matrix->nrow; // or col
         printf("NROW\t%d\n", nrow);
         int i;
@@ -16,10 +16,10 @@ void process_TR(struct sparse_csr *matrix)
             if (strcmp(matrix->data_type, INT) == 0)
                 trace_int += CSR_INT_x_y(matrix, i, i);
             else
-                trace_float += CSR_FLOAT_x_y(matrix, i, i);
+                trace_double += CSR_double_x_y(matrix, i, i);
         }
         printf("TRACE:\t%d\n", trace_int);
-        printf("TRACE:\t%f\n", trace_float);
+        printf("TRACE:\t%f\n", trace_double);
     }
     return;
 }
@@ -33,7 +33,7 @@ void process_TS(struct sparse_csr *matrix)
     }
     else
     {
-        //printf("VALUE:\t%f\n", CSR_FLOAT_x_y(matrix, 0, 0));
+        //printf("VALUE:\t%f\n", CSR_double_x_y(matrix, 0, 0));
     }
     return;
 }

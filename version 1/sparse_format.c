@@ -77,12 +77,12 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
     }
     else {
         // MANAGE DATA TYPE PARAM IN CSC_MATRIX
-        matrix_csr->data_type = (char *)safe_malloc(strlen(FLOAT) * sizeof(char));
-        strcpy(matrix_csr->data_type, FLOAT);
+        matrix_csr->data_type = (char *)safe_malloc(strlen(double) * sizeof(char));
+        strcpy(matrix_csr->data_type, double);
 
         // INITIAL MEMORY ALLOCATION
-        matrix_csr->NNZ_float = (float *)safe_malloc(sizeof(float));
-        matrix_csr->NNZ_float_size = 0;
+        matrix_csr->NNZ_double = (double *)safe_malloc(sizeof(double));
+        matrix_csr->NNZ_double_size = 0;
 
         // WALK THROUGH OTHER TOKENS
         int nvals = 0;
@@ -92,14 +92,14 @@ void convert_sparse_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
             if (row_cnt % ncol == 0)
                 row++;
 
-            float tmp = atof(token);
+            double tmp = atof(token);
             // IF ELEMENT IS NON ZERO
             if (tmp != 0)
             {
                 // ADD NON-ZERO TO NNZ ARRAY
-                matrix_csr->NNZ_float = safe_realloc(matrix_csr->NNZ_float, (nvals + 1) * sizeof(matrix_csr->NNZ_float[0]));
-                matrix_csr->NNZ_float[nvals] = atof(token);
-                matrix_csr->NNZ_float_size++;
+                matrix_csr->NNZ_double = safe_realloc(matrix_csr->NNZ_double, (nvals + 1) * sizeof(matrix_csr->NNZ_double[0]));
+                matrix_csr->NNZ_double[nvals] = atof(token);
+                matrix_csr->NNZ_double_size++;
                 
                 // ADD COLUMN INDEX OF ELEMENT ADDED TO NNZ
                 matrix_csr->JA = safe_realloc(matrix_csr->JA, (nvals + 1) * sizeof(matrix_csr->JA[0]));

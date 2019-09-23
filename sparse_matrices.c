@@ -71,11 +71,9 @@ int main(int argc, char *argv[])
     //printf("DATA TYPE:\t %s\nNROWS:\t %d\nNCOLS:\t %d\nPAYLOAD: %s\n",matrix1->data_type, matrix1->nrow, matrix1->ncol, matrix1->payload);
 
     struct sparse_csr *matrix_csr = (sparse_csr *)safe_malloc(sizeof(sparse_csr));
-    //csr_function(matrix1, matrix_csr);
     matrix_to_csr(matrix1, matrix_csr);
-    //print_csr_state(matrix_csr);
 
-    // print_NNZ(matrix_csr); DEBUG
+    //print_NNZ(matrix_csr); //DEBUG
 
     // SINGLE FILE PROCESSING
     // SPECIAL CASE OF SCALAR MULTIPLICATION
@@ -90,7 +88,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            float_process_SM(matrix_csr, scalar, file, thread_count);
+            double_process_SM(matrix_csr, scalar, file, thread_count);
         }
     }
     else if (trace)
@@ -100,7 +98,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            process_TR_float(matrix_csr, file, thread_count);
+            process_TR_double(matrix_csr, file, thread_count);
         }
 
     else if (transpose)
@@ -111,7 +109,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            process_TS_float(matrix_csr, file, thread_count);
+            process_TS_double(matrix_csr, file, thread_count);
         }
     }
     // TWO FILE PROCESSING
@@ -130,7 +128,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                process_MM_float(matrix_csr, matrix_csr2, file, file2, thread_count);
+                process_MM_double(matrix_csr, matrix_csr2, file, file2, thread_count);
             }
         }
         else if (addition)
@@ -141,7 +139,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                process_ADD_float(matrix_csr, matrix_csr2, file, file2, thread_count);
+                process_ADD_double(matrix_csr, matrix_csr2, file, file2, thread_count);
             }
         }
         // DEALLOCATE ALLOCATED MEMORY

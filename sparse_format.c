@@ -4,7 +4,7 @@
  * HELPER FUNCTIONS
  */
 void fill_nnz_int(struct Matrix *, struct sparse_csr *);
-void fill_nnz_float(struct Matrix *, struct sparse_csr *);
+void fill_nnz_double(struct Matrix *, struct sparse_csr *);
 void fill_IA_JA(struct Matrix *matrix, struct sparse_csr *matrix_csr);
 
 // CONVERT MATRIX INTO SPARSE CSR FROMAT
@@ -14,7 +14,7 @@ void matrix_to_csr(struct Matrix *matrix, struct sparse_csr *matrix_csr)
     if (strcmp(matrix->data_type, INT) == 0)
         fill_nnz_int(matrix, matrix_csr);
     else
-        fill_nnz_float(matrix, matrix_csr);
+        fill_nnz_double(matrix, matrix_csr);
     fill_IA_JA(matrix, matrix_csr);
 }
 
@@ -54,8 +54,8 @@ void fill_nnz_int(struct Matrix *matrix, struct sparse_csr *matrix_csr)
     }
 }
 
-// FILL IN matrix -> nnz_float
-void fill_nnz_float(struct Matrix *matrix, struct sparse_csr *matrix_csr)
+// FILL IN matrix -> nnz_double
+void fill_nnz_double(struct Matrix *matrix, struct sparse_csr *matrix_csr)
 {
     // MANAGE DATA TYPE PARAM IN CSC_MATRIX
     matrix_csr->data_type = (char *)safe_malloc(strlen(FLOAT) * sizeof(char));
@@ -65,8 +65,8 @@ void fill_nnz_float(struct Matrix *matrix, struct sparse_csr *matrix_csr)
     char *token;
 
     int index = 0;
-    matrix_csr->NNZ_float_size = 0;
-    matrix_csr->NNZ_float = (float *)safe_malloc(sizeof(float));
+    matrix_csr->NNZ_double_size = 0;
+    matrix_csr->NNZ_double = (double *)safe_malloc(sizeof(double));
 
     /* get the first token */
     char *payload_cpy = (char *)safe_malloc(matrix->payload_length * sizeof(char));
@@ -76,21 +76,21 @@ void fill_nnz_float(struct Matrix *matrix, struct sparse_csr *matrix_csr)
     /* walk through other tokens */
     while (token != NULL)
     {
-        float tmp = atof(token);
+        double tmp = atof(token);
         if (tmp != 0)
         {
-            matrix_csr->NNZ_float[index] = tmp;
+            matrix_csr->NNZ_double[index] = tmp;
             index++; // increment before realloc so correct amount of memory is reallocated -- think about it !
-            matrix_csr->NNZ_float = (float *)safe_realloc(matrix_csr->NNZ_float, (index + 1) * sizeof(matrix_csr->NNZ_float[0]));
+            matrix_csr->NNZ_double = (double *)safe_realloc(matrix_csr->NNZ_double, (index + 1) * sizeof(matrix_csr->NNZ_double[0]));
 
-            matrix_csr->NNZ_float_size++; // increment length of NNZ_float variable
+            matrix_csr->NNZ_double_size++; // increment length of NNZ_double variable
         }
 
         token = strtok(NULL, s);
     }
 }
 
-// FILL IN matrix -> nnz_float
+// FILL IN matrix -> nnz_double
 void fill_IA_JA(struct Matrix *matrix, struct sparse_csr *matrix_csr)
 {
     int row_cnt = 0;
