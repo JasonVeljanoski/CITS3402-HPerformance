@@ -1,47 +1,5 @@
 #include "sparse_matrices.h"
 
-/**
- * SINGLE FILE PROCESING
- */
-void process_SM(struct sparse_csr *matrix, int scalar)
-{
-    printf("LET'S SCALAR MULTIPLY BABY:\t%s\n", matrix->data_type);
-    char *data_type = matrix->data_type;
-
-    if (strcmp(data_type, INT) == 0)
-    {
-        print_csr_state(matrix); // DEBUG
-        int i;
-        for (i = 0; i < matrix->NNZ_int_size; i++)
-        {
-            matrix->NNZ_int[i] *= scalar;
-        }
-        print_csr_state(matrix); // DEBUG
-
-        /**
-         * if (l flag) {
-         *  create_output_file(matrix);
-         * }
-         */
-    }
-    else
-    {
-        print_csr_state(matrix); // DEBUG
-        int i;
-        for (i = 0; i < matrix->NNZ_float_size; i++)
-        {
-            matrix->NNZ_float[i] *= scalar;
-        }
-        print_csr_state(matrix); // DEBUG
-
-        /**
-         * if (l flag) {
-         *  create_output_file(matrix);
-         * }
-         */
-    }
-    return;
-}
 
 void process_TR(struct sparse_csr *matrix)
 {
@@ -61,7 +19,7 @@ void process_TR(struct sparse_csr *matrix)
                 trace_float += CSR_FLOAT_x_y(matrix, i, i);
         }
         printf("TRACE:\t%d\n", trace_int);
-       printf("TRACE:\t%f\n", trace_float);
+        printf("TRACE:\t%f\n", trace_float);
     }
     return;
 }

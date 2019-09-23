@@ -22,7 +22,7 @@ void print_CLAs(char *file, char *file2, int threadCount, int lFlg, int scalar_m
 // PRINT MATRIX STRUCT STATE
 void print_matrix_state(struct Matrix *matrix)
 {
-    int size = sizeof(Matrix *) + matrix->data_type_length*sizeof(char) + matrix->nrow_size*sizeof(int) + matrix->ncol_size*sizeof(int) + matrix->payload_length*sizeof(char);
+    int size = sizeof(Matrix *) + matrix->data_type_length * sizeof(char) + matrix->nrow_size * sizeof(int) + matrix->ncol_size * sizeof(int) + matrix->payload_length * sizeof(char);
     printf("\n\n%d\n\n", size);
     char *matrix_state = (char *)safe_malloc(size);
     sprintf(
@@ -41,76 +41,92 @@ void print_matrix_state(struct Matrix *matrix)
     free(matrix_state);
 }
 
-// PRINT MATRIX STRUCT STATE
+
 /**
- *  THIS NEEDS TO BE FIXED
+ * HELPER FUNCTIONS
  */
-void print_csr_state(struct sparse_csr *matrix_csr)
+void print_NNZ_i(struct sparse_csr *matrix_csr);
+void print_NNZ_f(struct sparse_csr *matrix_csr);
+void print_IA(struct sparse_csr *matrix_csr);
+void print_JA(struct sparse_csr *matrix_csr);
+
+/**
+ * PRINT SPARSE CRC MATRIX
+ */
+void print_NNZ(struct sparse_csr *matrix_csr)
 {
+    printf("NNZ:\t");
     if (strcmp(matrix_csr->data_type, INT) == 0)
     {
-        int size = matrix_csr->data_type_size * sizeof(char);
-
-        char *matrix_state = (char *)safe_malloc(size);
-        sprintf(
-            matrix_state,
-            "DATA TYPE:\t %s\n",
-            matrix_csr->data_type);
-        printf("-------------\n");
-        printf("CSR MATRIX STATE:\n");
-        printf("-------------\n");
-        printf("%s\n", matrix_state);
-        printf("NNZ:\t");
-        int i;
-        // PRINT NNZ's
-        for (i = 0; i < matrix_csr->NNZ_int_size; i++)
-            printf("%d\t", matrix_csr->NNZ_int[i]);
-        printf("\n");
-        printf("IA:\t");
-        // PRINT IA's
-        for (i = 0; i < matrix_csr->IA_size; i++)
-            printf("%d\t", matrix_csr->IA[i]);
-        printf("\n");
-        printf("JA:\t");
-        // PRINT JA's
-        for (i = 0; i < matrix_csr->JA_size; i++)
-            printf("%d\t", matrix_csr->JA[i]);
-        printf("\n");
-        printf("-------------\n\n");
-
-        free(matrix_state);
+        print_NNZ_i(matrix_csr);
     }
     else
     {
-        int size = matrix_csr->data_type_size*sizeof(char);
+        print_NNZ_f(matrix_csr);
+    }
+    printf("IA:\t");
+    print_IA(matrix_csr);
+    printf("JA:\t");
+    print_JA(matrix_csr);
+}
 
-        char *matrix_state = (char *)safe_malloc(size);
-        sprintf(
-            matrix_state,
-            "DATA TYPE:\t %s\n",
-            matrix_csr->data_type);
-        printf("-------------\n");
-        printf("MATRIX STATE:\n");
-        printf("-------------\n");
-        printf("%s\n", matrix_state);
-        printf("NNZ:\t");
-        int i;
-        // PRINT NNZ's
-        for (i = 0; i < matrix_csr->NNZ_float_size; i++)
-            printf("%f\t", matrix_csr->NNZ_float[i]);
-        printf("\n");
-        printf("IA:\t");
-        // PRINT IA's
-        for (i = 0; i < matrix_csr->IA_size; i++)
-            printf("%d\t", matrix_csr->IA[i]);
-        printf("\n");
-        printf("JA:\t");
-        // PRINT JA's
-        for (i = 0; i < matrix_csr->JA_size; i++)
-            printf("%d\t", matrix_csr->JA[i]);
-        printf("\n");
-        printf("-------------\n\n");
-        
-        free(matrix_state);
+void print_IA(struct sparse_csr *matrix_csr)
+{
+    // PRINT NNZ's
+    int i;
+    for (i = 0; i < matrix_csr->IA_size; i++)
+        printf("%d\t", matrix_csr->IA[i]);
+    printf("\n");
+}
+
+void print_JA(struct sparse_csr *matrix_csr)
+{
+    // PRINT NNZ's
+    int i;
+    for (i = 0; i < matrix_csr->JA_size; i++)
+        printf("%d\t", matrix_csr->JA[i]);
+    printf("\n");
+}
+
+/**
+ * HELPER FUNCTIONS
+ */
+void print_NNZ_f(struct sparse_csr *matrix_csr)
+{
+    // PRINT NNZ's
+    int i;
+    for (i = 0; i < matrix_csr->NNZ_float_size; i++)
+        printf("%f\t", matrix_csr->NNZ_float[i]);
+    printf("\n");
+}
+
+void print_NNZ_i(struct sparse_csr *matrix_csr)
+{
+    // PRINT NNZ's
+    int i;
+    for (i = 0; i < matrix_csr->NNZ_int_size; i++)
+        printf("%d\t", matrix_csr->NNZ_int[i]);
+    printf("\n");
+}
+
+
+/**
+ * PRINT ROW MATRIX
+ */
+void print_line_matrix_int(int *matrix_line, struct sparse_csr *matrix) {
+    int size = matrix->ncol * matrix->nrow;
+    int j;
+    for (j = 0; j < size; j++)
+    {
+        printf("%d\t", matrix_line[j]);
+    }
+}
+
+void float_print_line_matrix(float *matrix_line, struct sparse_csr *matrix) {
+    int size = matrix->ncol * matrix->nrow;
+    int j;
+    for (j = 0; j < size; j++)
+    {
+        printf("%f\t", matrix_line[j]);
     }
 }

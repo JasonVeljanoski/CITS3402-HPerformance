@@ -41,15 +41,25 @@ typedef struct Matrix {
 extern void file_reader(char *, struct Matrix *);
 
 // SPARSE FORMAT
-extern void convert_sparse_csr(struct Matrix *, struct sparse_csr *);
-extern void csr_function(struct Matrix *, struct sparse_csr *);
+extern void matrix_to_csr(struct Matrix *, struct sparse_csr *);
 
 // MATRIX OPERATIONS
-extern void process_SM(struct sparse_csr *, int);
 extern void process_TR(struct sparse_csr *);
 extern void process_TS(struct sparse_csr *);
 extern void process_ADD(struct sparse_csr *);
 extern void process_MM(struct sparse_csr *);
+
+// SCALAR MULTIPLY
+extern void process_SM_int(struct sparse_csr *, int, char *, int);
+extern void float_process_SM(struct sparse_csr *, int, char *, int);
+
+// TRACE
+extern void process_TR_int(struct sparse_csr *, char *, int );
+extern void process_TR_float(struct sparse_csr *, char *, int );
+
+// ADD
+extern void process_ADD_int(struct sparse_csr *, struct sparse_csr *, char *, char *, int );
+extern void process_ADD_float(struct sparse_csr *, struct sparse_csr *, char *, char *, int );
 
 // GENERAL
 extern void trim_line(char line[]);
@@ -65,6 +75,8 @@ extern float CSR_FLOAT_x_y(sparse_csr *,int , int );
 // DEBUG
 extern void print_matrix_state(struct Matrix *);
 extern void print_CLAs(char *,char *,int,int,int,int,int,int,int);
-extern void print_csr_state(struct sparse_csr *);
+extern void print_NNZ(struct sparse_csr *);
+extern void print_line_matrix_int(int *matrix_line, struct sparse_csr *matrix);
+extern void float_print_line_matrix(float *matrix_line, struct sparse_csr *matrix);
 //extern void print_int_star(int *, int );
 //extern void print_float_star(float *, int );

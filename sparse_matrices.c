@@ -71,20 +71,40 @@ int main(int argc, char *argv[])
     //printf("DATA TYPE:\t %s\nNROWS:\t %d\nNCOLS:\t %d\nPAYLOAD: %s\n",matrix1->data_type, matrix1->nrow, matrix1->ncol, matrix1->payload);
 
     struct sparse_csr *matrix_csr = (sparse_csr *)safe_malloc(sizeof(sparse_csr));
-    csr_function(matrix1, matrix_csr);
+    //csr_function(matrix1, matrix_csr);
+    matrix_to_csr(matrix1, matrix_csr);
     //print_csr_state(matrix_csr);
+
+    // print_NNZ(matrix_csr); DEBUG
 
     // SINGLE FILE PROCESSING
     // SPECIAL CASE OF SCALAR MULTIPLICATION
-    if (scalar_multiplication) {
+    if (scalar_multiplication)
+    {
         int scalar = atoi(argv[option_index + 2]);
-        process_SM(matrix_csr, scalar);
-    }
-    else if (trace) 
-        process_TR(matrix_csr);
 
-    else if (transpose) 
-         process_TS(matrix_csr);
+        // PROCESS AND OUTPUT FILE APPROPRIATLY
+        if (strcmp(matrix_csr->data_type, INT) == 0)
+        {
+            process_SM_int(matrix_csr, scalar, file, thread_count);
+        }
+        else
+        {
+            float_process_SM(matrix_csr, scalar, file, thread_count);
+        }
+    }
+    else if (trace)
+        if (strcmp(matrix_csr->data_type, INT) == 0)
+        {
+            process_TR_int(matrix_csr, file, thread_count);
+        }
+        else
+        {
+            process_TR_float(matrix_csr, file, thread_count);
+        }
+
+    else if (transpose)
+        process_TS(matrix_csr);
     // TWO FILE PROCESSING
     else
     {
@@ -93,14 +113,21 @@ int main(int argc, char *argv[])
         //print_matrix_state(matrix2);
 
         struct sparse_csr *matrix_csr2 = (sparse_csr *)safe_malloc(sizeof(sparse_csr));
-        convert_sparse_csr(matrix2, matrix_csr2);
-        //print_csr_state(matrix_csr2);
+        matrix_to_csr(matrix2, matrix_csr2);
 
         if (matrix_multiplication)
             process_MM(matrix_csr);
         else if (addition)
-            process_ADD(matrix_csr);
-
+        {
+            if (strcmp(matrix_csr->data_type, INT) == 0)
+            {
+                process_ADD_int(matrix_csr, matrix_csr2, file, file2, thread_count);
+            }
+            else
+            {
+                process_ADD_float(matrix_csr, matrix_csr2, file, file2, thread_count);
+            }
+        }
         // DEALLOCATE ALLOCATED MEMORY
         free_matrix(matrix2);
         free_matrix_csr(matrix_csr2);
