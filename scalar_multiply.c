@@ -8,7 +8,7 @@ void sm_double_output_file(char *operation, char *filename, int threads, char *d
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
  */
-void process_SM_int(struct sparse_csr *matrix, int scalar, char *filename, int threads)
+void process_SM_int(struct sparse_csr *matrix, int scalar, char *filename, int threads, int doLog, double file_load_conv_time)
 {
     /* TYPE OF OPERATION PART */
     // OPERATION REQUESTED
@@ -24,9 +24,18 @@ void process_SM_int(struct sparse_csr *matrix, int scalar, char *filename, int t
     // COLUMNS
     int ncols = matrix->ncol;
     // THE NEW MATRIX
+    clock_t start, end;
+    double time_taken;
+
+    start = clock();
+    
     int *matrix_line = output_sm_matrix_int(matrix, scalar);
 
-    sm_int_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, 1, 2);
+    end = clock();
+    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    if(doLog)
+        sm_int_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -35,7 +44,7 @@ void process_SM_int(struct sparse_csr *matrix, int scalar, char *filename, int t
 /**
  * PROCESS double TYPE SCALAR MULTIPLY DATA
  */
-void double_process_SM(struct sparse_csr *matrix, int scalar, char *filename, int threads)
+void double_process_SM(struct sparse_csr *matrix, int scalar, char *filename, int threads, int doLog, double file_load_conv_time)
 {
     /* TYPE OF OPERATION PART */
     // OPERATION REQUESTED
@@ -51,9 +60,18 @@ void double_process_SM(struct sparse_csr *matrix, int scalar, char *filename, in
     // COLUMNS
     int ncols = matrix->ncol;
     // THE NEW MATRIX
+     clock_t start, end;
+    double time_taken;
+
+    start = clock();
+    
     double *matrix_line = double_output_sm_matrix(matrix, scalar);
 
-    sm_double_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, 1, 2);
+    end = clock();
+    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    if (doLog)
+        sm_double_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);

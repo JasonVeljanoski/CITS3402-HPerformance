@@ -12,7 +12,7 @@ void add_double_output_file(char *operation, char *file1, char *file2, int threa
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
  */
-void process_ADD_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char *file1, char *file2, int threads)
+void process_ADD_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char *file1, char *file2, int threads, int doLog, double file_load_conv_time)
 {
     /* TYPE OF OPERATION PART */
     // OPERATION REQUESTED
@@ -29,9 +29,18 @@ void process_ADD_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, cha
     // COLUMNS
     int ncols = matrix1->ncol;
     // THE NEW MATRIX
+    clock_t start, end;
+    double time_taken;
+
+    start = clock();
+    
     int *matrix_line = output_add_matrix_int(matrix1, matrix2);
 
-    add_int_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, 1, 2);
+    end = clock();
+    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    if (doLog) 
+        add_int_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);
@@ -40,7 +49,7 @@ void process_ADD_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, cha
 /**
  * PROCESS INT TYPE SCALAR MULTIPLY DATA
  */
-void process_ADD_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char *file1, char *file2, int threads)
+void process_ADD_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char *file1, char *file2, int threads, int doLog, double file_load_conv_time)
 {
     /* TYPE OF OPERATION PART */
     // OPERATION REQUESTED
@@ -57,9 +66,19 @@ void process_ADD_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, 
     // COLUMNS
     int ncols = matrix1->ncol;
     // THE NEW MATRIX
+
+    clock_t start, end;
+    double time_taken;
+
+    start = clock();
+    
     double *matrix_line = double_output_add_matrix(matrix1, matrix2);
 
-    add_double_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, 1, 2);
+    end = clock();
+    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    if (doLog)
+        add_double_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
 
     // DEALLOCATE ALLOCATED MEMORY
     free(matrix_line);

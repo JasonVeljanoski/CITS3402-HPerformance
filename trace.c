@@ -4,32 +4,53 @@
  * HELPER FUNCTIONS
  */
 int get_trace_int(struct sparse_csr *matrix);
-void tr_int_output_file(char *operation, char *filename, int threads,int trace, double convert_time, double operation_time);
+void tr_int_output_file(char *operation, char *filename, int threads, int trace, double convert_time, double operation_time);
 double get_trace_double(struct sparse_csr *matrix);
-void tr_double_output_file(char *operation, char *filename, int threads,double trace, double convert_time, double operation_time);
+void tr_double_output_file(char *operation, char *filename, int threads, double trace, double convert_time, double operation_time);
 
 /**
  * PROCESSING
  */
 // create file for int trace
-void process_TR_int(struct sparse_csr *matrix, char *filename, int threads)
+void process_TR_int(struct sparse_csr *matrix, char *filename, int threads, int doLog, double file_load_conv_time)
 {
     char *operation = "tr";
-    tr_int_output_file(operation, filename, threads, get_trace_int(matrix), 1, 2);
+    clock_t start, end;
+    double time_taken;
+
+    start = clock();
+
+    int trace = get_trace_int(matrix);
+
+    end = clock();
+    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    if (doLog)
+        tr_int_output_file(operation, filename, threads, trace, file_load_conv_time, time_taken);
 }
 // create file for double trace
-void process_TR_double(struct sparse_csr *matrix, char *filename, int threads)
+void process_TR_double(struct sparse_csr *matrix, char *filename, int threads, int doLog, double file_load_conv_time)
 {
     char *operation = "tr";
-    tr_double_output_file(operation, filename, threads, get_trace_double(matrix), 1, 2);
+
+     clock_t start, end;
+    double time_taken;
+
+    start = clock();
+    
+    double trace = get_trace_int(matrix);
+
+    end = clock();
+    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    if (doLog)
+        tr_double_output_file(operation, filename, threads, trace, file_load_conv_time, time_taken);
 }
-
-
 
 /**
  * HELPER FUNCTIONS
- */ 
-void tr_int_output_file(char *operation, char *filename, int threads,int trace, double convert_time, double operation_time)
+ */
+void tr_int_output_file(char *operation, char *filename, int threads, int trace, double convert_time, double operation_time)
 {
     /* File pointer to hold reference to our file */
     FILE *fPtr;
@@ -50,12 +71,12 @@ void tr_int_output_file(char *operation, char *filename, int threads,int trace, 
     }
 
     /* Write data to file */
-    fprintf(fPtr, "%s\n", operation);//writing data into file
-    fprintf(fPtr, "%s\n", filename);//writing data into file  
-    fprintf(fPtr, "%d\n", threads);//writing data into file  
-    fprintf(fPtr, "%d\n", trace);//writing data into file  
-    fprintf(fPtr, "%f\n",convert_time);//writing data into file 
-    fprintf(fPtr, "%f\n",operation_time);//writing data into file  
+    fprintf(fPtr, "%s\n", operation);      //writing data into file
+    fprintf(fPtr, "%s\n", filename);       //writing data into file
+    fprintf(fPtr, "%d\n", threads);        //writing data into file
+    fprintf(fPtr, "%d\n", trace);          //writing data into file
+    fprintf(fPtr, "%f\n", convert_time);   //writing data into file
+    fprintf(fPtr, "%f\n", operation_time); //writing data into file
     /* write data ended */
 
     /* Close file to save file data */
@@ -64,7 +85,7 @@ void tr_int_output_file(char *operation, char *filename, int threads,int trace, 
     free(file_format);
 }
 
-void tr_double_output_file(char *operation, char *filename, int threads,double trace, double convert_time, double operation_time)
+void tr_double_output_file(char *operation, char *filename, int threads, double trace, double convert_time, double operation_time)
 {
     /* File pointer to hold reference to our file */
     FILE *fPtr;
@@ -85,12 +106,12 @@ void tr_double_output_file(char *operation, char *filename, int threads,double t
     }
 
     /* Write data to file */
-    fprintf(fPtr, "%s\n", operation);//writing data into file
-    fprintf(fPtr, "%s\n", filename);//writing data into file  
-    fprintf(fPtr, "%d\n", threads);//writing data into file  
-    fprintf(fPtr, "%f\n", trace);//writing data into file  
-    fprintf(fPtr, "%f\n",convert_time);//writing data into file 
-    fprintf(fPtr, "%f\n",operation_time);//writing data into file  
+    fprintf(fPtr, "%s\n", operation);      //writing data into file
+    fprintf(fPtr, "%s\n", filename);       //writing data into file
+    fprintf(fPtr, "%d\n", threads);        //writing data into file
+    fprintf(fPtr, "%f\n", trace);          //writing data into file
+    fprintf(fPtr, "%f\n", convert_time);   //writing data into file
+    fprintf(fPtr, "%f\n", operation_time); //writing data into file
     /* write data ended */
 
     /* Close file to save file data */
@@ -98,8 +119,6 @@ void tr_double_output_file(char *operation, char *filename, int threads,double t
 
     free(file_format);
 }
-
-
 
 int get_trace_int(struct sparse_csr *matrix)
 {

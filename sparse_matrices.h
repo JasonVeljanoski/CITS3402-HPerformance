@@ -52,24 +52,24 @@ extern void process_ADD(struct sparse_csr *);
 extern void process_MM(struct sparse_csr *);
 
 // SCALAR MULTIPLY
-extern void process_SM_int(struct sparse_csr *, int, char *, int);
-extern void double_process_SM(struct sparse_csr *, int, char *, int);
+extern void process_SM_int(struct sparse_csr *, int, char *, int, int, double);
+extern void double_process_SM(struct sparse_csr *, int, char *, int, int, double);
 
 // TRACE
-extern void process_TR_int(struct sparse_csr *, char *, int );
-extern void process_TR_double(struct sparse_csr *, char *, int );
+extern void process_TR_int(struct sparse_csr *, char *, int, int, double);
+extern void process_TR_double(struct sparse_csr *, char *, int, int, double);
 
 // ADD
-extern void process_ADD_int(struct sparse_csr *, struct sparse_csr *, char *, char *, int );
-extern void process_ADD_double(struct sparse_csr *, struct sparse_csr *, char *, char *, int );
+extern void process_ADD_int(struct sparse_csr *, struct sparse_csr *, char *, char *, int, int, double);
+extern void process_ADD_double(struct sparse_csr *, struct sparse_csr *, char *, char *, int, int, double);
 
 // TRANSPOSE
-extern void process_TS_int(struct sparse_csr *, char *, int );
-extern void process_TS_double(struct sparse_csr *, char *, int);
+extern void process_TS_int(struct sparse_csr *, char *, int, int, double);
+extern void process_TS_double(struct sparse_csr *, char *, int, int, double);
 
 // MULTIPLICATION
-extern void process_MM_int(struct sparse_csr *, struct sparse_csr *, char *, char *, int );
-extern void process_MM_double(struct sparse_csr *, struct sparse_csr *, char *, char *, int );
+extern void process_MM_int(struct sparse_csr *, struct sparse_csr *, char *, char *, int, int , double);
+extern void process_MM_double(struct sparse_csr *, struct sparse_csr *, char *, char *, int, int , double);
 
 
 // GENERAL
