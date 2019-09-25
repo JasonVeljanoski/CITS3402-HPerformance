@@ -3,7 +3,7 @@
 /**
  * HELPER FUNCTIONS
  */
-int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
+int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, int threads);
 double *double_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *matrix2);
 void mm_int_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
 void mm_double_output_file(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
@@ -30,15 +30,11 @@ void process_MM_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, char
     // COLUMNS
     int ncols = matrix2->ncol;
     // THE NEW MATRIX
-    clock_t start, end;
-    double time_taken;
+    double start_time = omp_get_wtime();
 
-    start = clock();
-    
-    int *matrix_line = output_mm_matrix_int(matrix1, matrix2);
+    int *matrix_line = output_mm_matrix_int(matrix1, matrix2, threads);
 
-    end = clock();
-    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+    double time_taken = omp_get_wtime() - start_time;
 
     if (doLog)
         mm_int_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
@@ -67,15 +63,11 @@ void process_MM_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, c
     int ncols = matrix2->ncol;
     // THE NEW MATRIX
 
-    clock_t start, end;
-    double time_taken;
+    double start_time = omp_get_wtime();
 
-    start = clock();
-    
     double *matrix_line = double_output_mm_matrix(matrix1, matrix2);
 
-    end = clock();
-    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+    double time_taken = omp_get_wtime() - start_time;
 
     if (doLog)
         mm_double_output_file(operation, file1, file2, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
@@ -90,7 +82,7 @@ void process_MM_double(struct sparse_csr *matrix1, struct sparse_csr *matrix2, c
  * HELPER FUNCTIONS
  */
 
-int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2)
+int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2, int threads)
 {
     int sum = 0;
     int first_nrows = matrix1->nrow;
@@ -100,27 +92,32 @@ int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2
 
     int size = first_nrows * sec_ncols;
     int *matrix_line = (int *)safe_malloc(sizeof(int) * size);
-    int index = 0;
+    //int index = 0;
+
+    int C[first_nrows][sec_ncols];
+    memset(C, 0, sizeof(C[0][0]) * first_nrows * sec_ncols);
 
     // make sure cols of matrix1 == rows of matrix2 AND datatype is same for both
     if ((first_ncols == sec_nrows) && (strcmp(matrix1->data_type, matrix2->data_type) == 0))
     {
+        int index = 0;
         int i, j, k;
-        for (i = 0; i < first_nrows; i++)
-        {
-            for (j = 0; j < sec_ncols; j++)
+            for (i = 0; i < first_nrows; i++)
             {
-                for (k = 0; k < sec_nrows; k++)
+                for (j = 0; j < sec_ncols; j++)
                 {
-                    sum += CSR_INT_x_y(matrix1, i, k) * CSR_INT_x_y(matrix2, k, j);
+                        for (k = 0; k < sec_nrows; k++)
+                        {
+                            sum += CSR_INT_x_y(matrix1, i, k) * CSR_INT_x_y(matrix2, k, j);
+                        }
+                    matrix_line[index] = sum;
+                    index++;
+                    sum = 0; // reset sum
                 }
-                matrix_line[index] = sum;
-                index++;
-                sum = 0; // reset sum
-            }
         }
     }
-    else {
+    else
+    {
         fprintf(stderr, "Error - matrix1 rows != matrix2 cols OR data types are different\n");
         exit(0);
     }
@@ -206,7 +203,8 @@ double *double_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *m
             }
         }
     }
-    else {
+    else
+    {
         fprintf(stderr, "Error - matrix1 rows != matrix2 cols OR data types are different\n");
         exit(0);
     }
@@ -262,50 +260,52 @@ void mm_double_output_file(char *operation, char *file1, char *file2, int thread
     free(file_format);
 }
 
-void mm_double_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time) {
+void mm_double_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time)
+{
     /* Write data to file */
-    printf("%s\n", operation);//writing data into file
-    printf("%s\n", file1);//writing data into file  
-    printf("%s\n", file2);//writing data into file  
-    printf("%d\n", threads);//writing data into file  
-    printf("%s\n", data_type);//writing data into file  
-    printf("%d\n", nrow);//writing data into file  
-    printf("%d\n", ncol);//writing data into file  
-    
+    printf("%s\n", operation); //writing data into file
+    printf("%s\n", file1);     //writing data into file
+    printf("%s\n", file2);     //writing data into file
+    printf("%d\n", threads);   //writing data into file
+    printf("%s\n", data_type); //writing data into file
+    printf("%d\n", nrow);      //writing data into file
+    printf("%d\n", ncol);      //writing data into file
+
     // WRITE MATRIX IN
     int size = nrow * ncol;
     int i;
     for (i = 0; i < size; i++)
     {
-        printf("%f ", matrix_line[i]); //writing data into file  
+        printf("%f ", matrix_line[i]); //writing data into file
     }
     printf("\n");
-    
-    printf("%f\n",convert_time);//writing data into file 
-    printf("%f\n",operation_time);//writing data into file  
+
+    printf("%f\n", convert_time);   //writing data into file
+    printf("%f\n", operation_time); //writing data into file
     /* write data ended */
 }
 
-void mm_int_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time) {
+void mm_int_terminal_out(char *operation, char *file1, char *file2, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time)
+{
     /* Write data to file */
-    printf("%s\n", operation);//writing data into file
-    printf("%s\n", file1);//writing data into file  
-    printf("%s\n", file2);//writing data into file  
-    printf("%d\n", threads);//writing data into file  
-    printf("%s\n", data_type);//writing data into file  
-    printf("%d\n", nrow);//writing data into file  
-    printf("%d\n", ncol);//writing data into file  
-    
+    printf("%s\n", operation); //writing data into file
+    printf("%s\n", file1);     //writing data into file
+    printf("%s\n", file2);     //writing data into file
+    printf("%d\n", threads);   //writing data into file
+    printf("%s\n", data_type); //writing data into file
+    printf("%d\n", nrow);      //writing data into file
+    printf("%d\n", ncol);      //writing data into file
+
     // WRITE MATRIX IN
     int size = nrow * ncol;
     int i;
     for (i = 0; i < size; i++)
     {
-        printf("%d ", matrix_line[i]); //writing data into file  
+        printf("%d ", matrix_line[i]); //writing data into file
     }
     printf("\n");
-    
-    printf("%f\n",convert_time);//writing data into file 
-    printf("%f\n",operation_time);//writing data into file  
+
+    printf("%f\n", convert_time);   //writing data into file
+    printf("%f\n", operation_time); //writing data into file
     /* write data ended */
 }

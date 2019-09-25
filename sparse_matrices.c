@@ -79,13 +79,19 @@ int main(int argc, char *argv[])
 
     // SINGLE FILE PROCESSING
     // SPECIAL CASE OF SCALAR MULTIPLICATION
-    if (scalar_multiplication)
+    if (scalar_multiplication == 1)
     {
-        int scalar = atoi(argv[option_index + 2]);
+        double scalar = atof(argv[option_index + 2]);
 
         // PROCESS AND OUTPUT FILE APPROPRIATLY
         if (strcmp(matrix_csr->data_type, INT) == 0)
         {
+            matrix_csr->NNZ_double = (double *)safe_malloc(sizeof(double) * matrix_csr->NNZ_int_size);
+            for (int i = 0; i < matrix_csr->NNZ_int_size; i++)
+            {
+                matrix_csr->NNZ_double[i] = (double)matrix_csr->NNZ_int[i];
+                //printf("%f\t", matrix_csr->NNZ_double[i]);
+            }
             process_SM_int(matrix_csr, scalar, file, thread_count, lFlg, first_file_time_used);
         }
         else
@@ -93,7 +99,7 @@ int main(int argc, char *argv[])
             double_process_SM(matrix_csr, scalar, file, thread_count, lFlg, first_file_time_used);
         }
     }
-    else if (trace)
+    else if (trace == 1)
         if (strcmp(matrix_csr->data_type, INT) == 0)
         {
             process_TR_int(matrix_csr, file, thread_count, lFlg, first_file_time_used);
@@ -103,7 +109,7 @@ int main(int argc, char *argv[])
             process_TR_double(matrix_csr, file, thread_count, lFlg, first_file_time_used);
         }
 
-    else if (transpose)
+    else if (transpose == 1)
     {
         if (strcmp(matrix_csr->data_type, INT) == 0)
         {
@@ -130,7 +136,7 @@ int main(int argc, char *argv[])
 
         double total_time = sec_file_time_used + first_file_time_used;
 
-        if (matrix_multiplication)
+        if (matrix_multiplication == 1)
         {
             if (strcmp(matrix_csr->data_type, INT) == 0)
             {
@@ -141,7 +147,7 @@ int main(int argc, char *argv[])
                 process_MM_double(matrix_csr, matrix_csr2, file, file2, thread_count, lFlg, total_time);
             }
         }
-        else if (addition)
+        else if (addition == 1)
         {
             if (strcmp(matrix_csr->data_type, INT) == 0)
             {

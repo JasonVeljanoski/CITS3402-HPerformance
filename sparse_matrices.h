@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <time.h>
+#include <omp.h>
 
 // WELL FORMED FILE FORMAT, LINE INFO
 #define DATA_TYPE_LINE 0
@@ -52,7 +53,7 @@ extern void process_ADD(struct sparse_csr *);
 extern void process_MM(struct sparse_csr *);
 
 // SCALAR MULTIPLY
-extern void process_SM_int(struct sparse_csr *, int, char *, int, int, double);
+extern void process_SM_int(struct sparse_csr *, double, char *, int, int, double);
 extern void double_process_SM(struct sparse_csr *, int, char *, int, int, double);
 
 // TRACE
@@ -82,6 +83,7 @@ extern void free_matrix(Matrix *);
 extern int is_square(struct sparse_csr *);
 extern int CSR_INT_x_y(sparse_csr *,int , int );
 extern double CSR_double_x_y(sparse_csr *,int , int );
+extern void update_CSR_INT_x_y(sparse_csr *, int, int, int);
 
 // TIME
 extern char *ad_format_filename(void);

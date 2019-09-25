@@ -68,13 +68,12 @@ int CSR_INT_x_y(sparse_csr *matrix, int x, int y)
     int i;
     int nnz_in_row = matrix->IA[x + 1] - matrix->IA[x]; // amount of non zero values in row x
     int col_index = matrix->IA[x];                      // where to start indexing JA
+
     for (i = col_index; i < nnz_in_row + col_index; i++)
     {
-
         //printf("%d\t", matrix->JA[i]);
         if (matrix->JA[i] == y)
         {
-
             return matrix->NNZ_int[i];
         }
     }
@@ -91,7 +90,6 @@ double CSR_double_x_y(sparse_csr *matrix, int x, int y)
     int col_index = matrix->IA[x];                      // where to start indexing JA
     for (i = col_index; i < nnz_in_row + col_index; i++)
     {
-        //printf("%d\t", matrix->JA[i]);
         if (matrix->JA[i] == y)
         {
 
@@ -106,4 +104,22 @@ double CSR_double_x_y(sparse_csr *matrix, int x, int y)
 int is_square(struct sparse_csr *matrix)
 {
     return matrix->nrow == matrix->ncol;
+}
+
+
+void update_CSR_INT_x_y(sparse_csr *matrix, int x, int y, int val)
+{
+    int i;
+    int nnz_in_row = matrix->IA[x + 1] - matrix->IA[x]; // amount of non zero values in row x
+    int col_index = matrix->IA[x];                      // where to start indexing JA
+
+    for (i = col_index; i < nnz_in_row + col_index; i++)
+    {
+        //printf("%d\t", matrix->JA[i]);
+        if (matrix->JA[i] == y)
+        {
+            matrix->NNZ_int[i] = val;
+        }
+    }
+    // OTHERWISE matrix(x,y) = 0 (OUT OF BOUND COORD or ZERO VALUE)
 }

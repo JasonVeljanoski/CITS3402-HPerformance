@@ -7,15 +7,10 @@ void print_CLAs(char *file, char *file2, int threadCount, int lFlg, int scalar_m
     printf("Thread Count: %d\n", threadCount);
     printf("file(s): %s %s\n", file, file2);
 
-    if (scalar_multiplication)
         printf("long opt --sm flag: %d\n", scalar_multiplication);
-    if (trace)
         printf("long opt --tr flag: %d\n", trace);
-    if (addition)
         printf("long opt --ad flag: %d\n", addition);
-    if (transpose)
         printf("long opt --ts flag: %d\n", transpose);
-    if (matrix_multiplication)
         printf("long opt --mm flag: %d\n", matrix_multiplication);
 }
 

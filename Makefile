@@ -3,8 +3,8 @@ PROJECT =  sparse_matrices
 HEADERS =  $(PROJECT).h
 OBJ     =  sparse_matrices.o file_reader.o debug.o general.o sparse_format.o scalar_multiply.o trace.o addition.o transpose.o multiplication.o time.o
 
-C99     =  cc -std=c99
-CFLAGS  =  -Wall -pedantic -Werror
+C99     =  gcc-9 -std=c99
+CFLAGS  =  -fopenmp -Wall -pedantic -Werror
 
 $(PROJECT) : $(OBJ)
 	$(C99) $(CFLAGS) -o $(PROJECT) $(OBJ) -lm	

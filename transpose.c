@@ -1,9 +1,9 @@
 #include "sparse_matrices.h"
 
-int *output_ts_matrix_int(struct sparse_csr *matrix);
+int *output_ts_matrix_int(struct sparse_csr *matrix, int threads);
 void ts_int_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, int *matrix_line, double convert_time, double operation_time);
 void ts_double_output_file(char *operation, char *filename, int threads, char *data_type, int nrow, int ncol, double *matrix_line, double convert_time, double operation_time);
-double *double_output_ts_matrix(struct sparse_csr *matrix);
+double *double_output_ts_matrix(struct sparse_csr *matrix, int threads);
 void ts_double_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, double *matrix_line, double convert_time, double operation_time);
 void ts_int_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, int *matrix_line, double convert_time, double operation_time);
 
@@ -27,15 +27,11 @@ void process_TS_int(struct sparse_csr *matrix, char *filename, int threads, int 
     int ncols = matrix->nrow;
     // THE NEW MATRIX
 
-    clock_t start, end;
-    double time_taken;
+    double start_time = omp_get_wtime();
 
-    start = clock();
+    int *matrix_line = output_ts_matrix_int(matrix, threads);
 
-    int *matrix_line = output_ts_matrix_int(matrix);
-
-    end = clock();
-    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+    double time_taken = omp_get_wtime() - start_time;
 
     if (doLog)
         ts_int_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
@@ -65,15 +61,11 @@ void process_TS_double(struct sparse_csr *matrix, char *filename, int threads, i
     // COLUMNS
     int ncols = matrix->nrow;
     // THE NEW MATRIX
-     clock_t start, end;
-    double time_taken;
+    double start_time = omp_get_wtime();
 
-    start = clock();
-    
-    double *matrix_line = double_output_ts_matrix(matrix);
+    double *matrix_line = double_output_ts_matrix(matrix, threads);
 
-    end = clock();
-    time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+    double time_taken = omp_get_wtime() - start_time;
 
     if (doLog)
         ts_double_output_file(operation, filename, threads, data_type, nrows, ncols, matrix_line, file_load_conv_time, time_taken);
@@ -89,7 +81,7 @@ void process_TS_double(struct sparse_csr *matrix, char *filename, int threads, i
  */
 
 // [INT] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
-int *output_ts_matrix_int(struct sparse_csr *matrix)
+int *output_ts_matrix_int(struct sparse_csr *matrix, int threads)
 {
     // RECREATE NON SPARSE MATRIX FOR FILE OUTPUT
     int nrow = matrix->nrow;
@@ -98,15 +90,18 @@ int *output_ts_matrix_int(struct sparse_csr *matrix)
 
     int *matrix_line = (int *)safe_malloc(sizeof(int) * size);
     int k = 0;
-    int i;
-    for (i = 0; i < ncol; i++)
-    {
-        int j;
-        for (j = 0; j < nrow; j++)
+    int i, j;
+//#pragma omp parallel num_threads(threads)
+//    {
+//#pragma omp for
+        for (i = 0; i < ncol; i++)
         {
-            matrix_line[k] = CSR_INT_x_y(matrix, j, i);
-            k++;
-        }
+            for (j = 0; j < nrow; j++)
+            {
+                matrix_line[k] = CSR_INT_x_y(matrix, j, i);
+                k++;
+            }
+ //       }
     }
 
     //print_line_matrix_int(matrix_line, matrix);
@@ -162,7 +157,7 @@ void ts_int_output_file(char *operation, char *filename, int threads, char *data
 }
 
 // [double] RETURN NEW MATRIX AS A LINE OF ELEMENTS (AS IN INPUT FILE)
-double *double_output_ts_matrix(struct sparse_csr *matrix)
+double *double_output_ts_matrix(struct sparse_csr *matrix, int threads)
 {
     // RECREATE NON SPARSE MATRIX FOR FILE OUTPUT
     int nrow = matrix->nrow;
@@ -172,6 +167,9 @@ double *double_output_ts_matrix(struct sparse_csr *matrix)
     double *matrix_line = (double *)safe_malloc(sizeof(double) * size);
     int k = 0;
     int i;
+    //#pragma omp parallel num_threads(threads)
+    //    {
+    //#pragma omp for collapse(2)
     for (i = 0; i < ncol; i++)
     {
         int j;
@@ -181,6 +179,7 @@ double *double_output_ts_matrix(struct sparse_csr *matrix)
             k++;
         }
     }
+    //  }
 
     //print_line_matrix_int(matrix_line, matrix);
     return matrix_line;
@@ -234,48 +233,50 @@ void ts_double_output_file(char *operation, char *filename, int threads, char *d
     free(file_format);
 }
 
-void ts_int_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, int *matrix_line, double convert_time, double operation_time) {
+void ts_int_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, int *matrix_line, double convert_time, double operation_time)
+{
     /* Write data to file */
-    printf("%s\n", operation);//writing data into file
-    printf("%s\n", filename);//writing data into file  
-    printf("%d\n", threads);//writing data into file  
-    printf("%s\n", data_type);//writing data into file  
-    printf("%d\n", nrows);//writing data into file  
-    printf("%d\n", ncols);//writing data into file  
-    
+    printf("%s\n", operation); //writing data into file
+    printf("%s\n", filename);  //writing data into file
+    printf("%d\n", threads);   //writing data into file
+    printf("%s\n", data_type); //writing data into file
+    printf("%d\n", nrows);     //writing data into file
+    printf("%d\n", ncols);     //writing data into file
+
     // WRITE MATRIX IN
     int size = nrows * ncols;
     int i;
     for (i = 0; i < size; i++)
     {
-        printf("%d ", matrix_line[i]); //writing data into file  
+        printf("%d ", matrix_line[i]); //writing data into file
     }
     printf("\n");
-    
-    printf("%f\n",convert_time);//writing data into file 
-    printf("%f\n",operation_time);//writing data into file  
+
+    printf("%f\n", convert_time);   //writing data into file
+    printf("%f\n", operation_time); //writing data into file
     /* write data ended */
 }
 
-void ts_double_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, double *matrix_line, double convert_time, double operation_time) {
+void ts_double_terminal_out(char *operation, char *filename, int threads, char *data_type, int nrows, int ncols, double *matrix_line, double convert_time, double operation_time)
+{
     /* Write data to file */
-    printf("%s\n", operation);//writing data into file
-    printf("%s\n", filename);//writing data into file  
-    printf("%d\n", threads);//writing data into file  
-    printf("%s\n", data_type);//writing data into file  
-    printf("%d\n", nrows);//writing data into file  
-    printf("%d\n", ncols);//writing data into file  
-    
+    printf("%s\n", operation); //writing data into file
+    printf("%s\n", filename);  //writing data into file
+    printf("%d\n", threads);   //writing data into file
+    printf("%s\n", data_type); //writing data into file
+    printf("%d\n", nrows);     //writing data into file
+    printf("%d\n", ncols);     //writing data into file
+
     // WRITE MATRIX IN
     int size = nrows * ncols;
     int i;
     for (i = 0; i < size; i++)
     {
-        printf("%f ", matrix_line[i]); //writing data into file  
+        printf("%f ", matrix_line[i]); //writing data into file
     }
     printf("\n");
-    
-    printf("%f\n",convert_time);//writing data into file 
-    printf("%f\n",operation_time);//writing data into file  
+
+    printf("%f\n", convert_time);   //writing data into file
+    printf("%f\n", operation_time); //writing data into file
     /* write data ended */
 }
