@@ -127,7 +127,8 @@ int get_trace_int(struct sparse_csr *matrix, int threads)
         int nrow = matrix->nrow; // or col
         int i;
 
-        #pragma omp parallel for num_threads(threads) reduction(+:trace_int) 
+        omp_set_num_threads(threads);
+       #pragma omp parallel for schedule(static) reduction(+:trace_int)
         for (i = 0; i < nrow; i++)
         {
             trace_int += CSR_INT_x_y(matrix, i, i);

@@ -127,7 +127,8 @@ void double_output_sm_matrix(struct sparse_csr *matrix, int scalar, int threads)
 {
     // DO SCALAR MULTIPLICATION
     int i;
-#pragma omp parallel num_threads(threads)
+    omp_set_num_threads(threads);
+#pragma omp parallel
     {
 #pragma omp for
         for (i = 0; i < matrix->NNZ_double_size; i++)
@@ -187,10 +188,13 @@ void sm_double_output_file(char *operation, char *filename, int threads, char *d
 void output_sm_matrix_int(struct sparse_csr *matrix, double scalar, int threads)
 {
     int i;
-#pragma omp parallel num_threads(threads)
+    int size = matrix->NNZ_int_size;
+    omp_set_num_threads(threads);
+    int chunck = 5 * size/threads;
+#pragma omp parallel private(i)
     {
-#pragma omp for
-        for (i = 0; i < matrix->NNZ_int_size; i++)
+#pragma omp for schedule(static,chunck)
+        for (i = 0; i < size; i++)
         {
             matrix->NNZ_double[i] *= scalar;
         }

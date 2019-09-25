@@ -134,14 +134,12 @@ void output_add_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix
     // make sure (n_1,m_1) == (n_2, m_2) AND data types are the same
     if ((matrix1->nrow == matrix2->nrow) && (matrix1->ncol == matrix2->ncol) && (strcmp(matrix1->data_type, matrix2->data_type) == 0))
     {
-#pragma omp parallel num_threads(threads)
+        omp_set_num_threads(threads);
+#pragma omp parallel for schedule(static)
+        for (i = 0; i < length; i++)
         {
-#pragma omp for
-            for (i = 0; i < length; i++)
-            {
-                // note that we are changing matrix1 (but we dont need it after I am assuming)
-                matrix1->NNZ_int[i] = matrix1->NNZ_int[i] + matrix2->NNZ_int[i];
-            }
+            // note that we are changing matrix1 (but we dont need it after I am assuming)
+            matrix1->NNZ_int[i] = matrix1->NNZ_int[i] + matrix2->NNZ_int[i];
         }
     }
     else

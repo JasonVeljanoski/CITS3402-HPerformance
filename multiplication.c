@@ -102,18 +102,21 @@ int *output_mm_matrix_int(struct sparse_csr *matrix1, struct sparse_csr *matrix2
     {
         int index = 0;
         int i, j, k;
-            for (i = 0; i < first_nrows; i++)
+        //omp_set_num_threads(threads);
+        // #pragma omp parallel for collapse(2)
+        for (i = 0; i < first_nrows; i++)
+        {
+            for (j = 0; j < sec_ncols; j++)
             {
-                for (j = 0; j < sec_ncols; j++)
+                //#pragma omp parallel for reduction(+:sum)
+                for (k = 0; k < sec_nrows; k++)
                 {
-                        for (k = 0; k < sec_nrows; k++)
-                        {
-                            sum += CSR_INT_x_y(matrix1, i, k) * CSR_INT_x_y(matrix2, k, j);
-                        }
-                    matrix_line[index] = sum;
-                    index++;
-                    sum = 0; // reset sum
+                    sum += CSR_INT_x_y(matrix1, i, k) * CSR_INT_x_y(matrix2, k, j);
                 }
+                //matrix_line[j+i*sec_ncols] = sum;
+                matrix_line[index++] = sum;
+                sum = 0; // reset sum
+            }
         }
     }
     else

@@ -89,19 +89,19 @@ int *output_ts_matrix_int(struct sparse_csr *matrix, int threads)
     int size = nrow * ncol;
 
     int *matrix_line = (int *)safe_malloc(sizeof(int) * size);
-    int k = 0;
+    //int k = 0;
     int i, j;
-//#pragma omp parallel num_threads(threads)
-//    {
-//#pragma omp for
+
+    omp_set_num_threads(threads);
+#pragma omp parallel for collapse(2)
         for (i = 0; i < ncol; i++)
         {
             for (j = 0; j < nrow; j++)
             {
-                matrix_line[k] = CSR_INT_x_y(matrix, j, i);
-                k++;
+                //printf("i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
+                matrix_line[j + nrow*i] = CSR_INT_x_y(matrix, j, i);
+                //k++;
             }
- //       }
     }
 
     //print_line_matrix_int(matrix_line, matrix);
