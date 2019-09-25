@@ -192,16 +192,19 @@ double *double_output_mm_matrix(struct sparse_csr *matrix1, struct sparse_csr *m
     if ((first_ncols == sec_nrows) && (strcmp(matrix1->data_type, matrix2->data_type) == 0))
     {
         int i, j, k;
+        //omp_set_num_threads(threads);
+        // #pragma omp parallel for collapse(2)
         for (i = 0; i < first_nrows; i++)
         {
             for (j = 0; j < sec_ncols; j++)
             {
+                //#pragma omp parallel for reduction(+:sum)
                 for (k = 0; k < sec_nrows; k++)
                 {
                     sum += CSR_double_x_y(matrix1, i, k) * CSR_double_x_y(matrix2, k, j);
                 }
-                matrix_line[index] = sum;
-                index++;
+                //matrix_line[j+i*sec_ncols] = sum;
+                matrix_line[index++] = sum;
                 sum = 0; // reset sum
             }
         }

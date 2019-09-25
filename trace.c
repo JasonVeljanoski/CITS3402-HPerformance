@@ -148,7 +148,8 @@ double get_trace_double(struct sparse_csr *matrix, int threads)
     {
         int nrow = matrix->nrow; // or col
         int i;
-        #pragma omp parallel for num_threads(threads) reduction(+:trace_double) 
+        omp_set_num_threads(threads);
+       #pragma omp parallel for schedule(static) reduction(+:trace_double) 
         for (i = 0; i < nrow; i++)
         {
             trace_double += CSR_double_x_y(matrix, i, i);
